@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmConnect - Fresh Produce Directly From Farmers</title>
+  
+  <!-- Favicon placeholder using leaf emoji -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Supabase JS Client CDN -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Floating Toast Notifications -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Header Navigation -->
+  <header id="app-header">
+    <div class="container header-container">
+      <div class="logo" onclick="app.navigateTo('/')">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.39.5.08.66-.21.66-.48 0-.25-.01-.91-.01-1.8-2.5.43-3.13-1.02-3.13-1.02-.45-1.14-1.1-1.44-1.1-1.44-.82-.56.06-.55.06-.55.9.06 1.38.92 1.38.92.8 1.38 2.11.98 2.62.75.08-.58.31-.98.56-1.2-2.11-.24-4.33-1.05-4.33-4.7 0-1.04.37-1.89.98-2.56-.1-.24-.42-1.21.09-2.52 0 0 .8-.26 2.62.98.76-.21 1.57-.32 2.38-.32.81 0 1.62.11 2.38.32 1.82-1.24 2.62-.98 2.62-.98.51 1.31.19 2.28.09 2.52.61.67.98 1.52.98 2.56 0 3.66-2.22 4.45-4.34 4.69.34.29.65.87.65 1.75 0 1.26-.01 2.28-.01 2.59 0 .27.16.57.67.48C19.14 20.16 22 16.42 22 12c0-5.52-4.48-10-10-10z" style="display:none;"/>
+          <!-- Custom Agri-Tech Plant Logo -->
+          <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12a10 10 0 0 1 10-10zm0 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1-12.757a3.5 3.5 0 0 1 4.95 0 3.5 3.5 0 0 1 0 4.95L12.007 16l-3.957-3.807a3.5 3.5 0 0 1 0-4.95 3.5 3.5 0 0 1 4.95 0z" fill="#2E7D32"/>
+          <path d="M12 7v7" stroke="#81C784" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>FarmConnect</span>
+      </div>
+      
+      <nav class="nav-links">
+        <a class="nav-link active" onclick="app.navigateTo('/')" id="nav-home">Home</a>
+        <a class="nav-link" onclick="app.navigateTo('/shop')" id="nav-shop">Shop</a>
+        <a class="nav-link" onclick="app.navigateTo('/register')" id="nav-register">Register / Login</a>
+        <a class="nav-link" onclick="app.navigateTo('/farmer-dashboard')" id="nav-farmer-db" style="display:none;">Farmer Portal</a>
+        <a class="nav-link" onclick="app.navigateTo('/consumer-dashboard')" id="nav-consumer-db" style="display:none;">My Orders</a>
+        <a class="nav-link" onclick="app.navigateTo('/admin-dashboard')" id="nav-admin-db" style="display:none;">Admin</a>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Cart Trigger Icon -->
+        <div class="cart-badge-container" onclick="app.navigateTo('/cart')" title="View Cart">
+          <i data-lucide="shopping-cart"></i>
+          <span id="cart-count" class="cart-badge">0</span>
+        </div>
+        
+        <!-- Auth Profile Badge -->
+        <div id="user-profile-badge" style="display:none;" class="user-profile-menu" onclick="app.toggleUserMenu()">
+          <div class="user-avatar" id="user-avatar-initials">U</div>
+          <span class="user-name-text" id="user-display-name">User</span>
+          <i data-lucide="log-out" onclick="app.logout(event)" title="Log Out" style="width:16px; height:16px; margin-left:4px; color:var(--earth-dark);"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HOMEPAGE VIEW ================= -->
+  <main id="view-home" class="view-container active">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <h1>Fresh From Farm,<br><span>Direct To Your Home</span></h1>
+          <p>Buy fresh produce directly from local farmers while helping them earn better profits by removing middlemen.</p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" onclick="app.navigateTo('/shop')">Shop Now</button>
+            <button class="btn btn-secondary" onclick="app.navigateTo('/register?role=farmer')">Register as Farmer</button>
+          </div>
+        </div>
+        <div class="hero-image-wrapper">
+          <div class="hero-image-container"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works">
+      <div class="container">
+        <div class="section-header">
+          <h2>How FarmConnect Works</h2>
+          <p>Connecting soil and spoon in three simple steps</p>
+        </div>
+        <div class="workflow-grid">
+          <div class="workflow-card">
+            <div class="workflow-number">01</div>
+            <div class="workflow-icon"><i data-lucide="user-check" style="width:32px; height:32px;"></i></div>
+            <h3>Farmers Register</h3>
+            <p>Farmers list their fresh harvests, upload descriptions, locations, and set fair prices per kilogram.</p>
+          </div>
+          <div class="workflow-card">
+            <div class="workflow-number">02</div>
+            <div class="workflow-icon"><i data-lucide="search" style="width:32px; height:32px;"></i></div>
+            <h3>Consumers Shop</h3>
+            <p>Customers browse the shop by categories (Vegetables, Fruits, Grains, Organic) and place direct orders.</p>
+          </div>
+          <div class="workflow-card">
+            <div class="workflow-number">03</div>
+            <div class="workflow-icon"><i data-lucide="truck" style="width:32px; height:32px;"></i></div>
+            <h3>Direct Delivery</h3>
+            <p>Produce is packed at the farm and delivered directly to the consumer's doorstep, retaining full freshness.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="benefits-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Empowering both ends of the chain</h2>
+          <p>Why choose direct-from-farm connection?</p>
+        </div>
+        <div class="benefits-grid">
+          <div class="benefit-block">
+            <h3><i data-lucide="sprout"></i> For Farmers</h3>
+            <div class="benefit-items">
+              <div class="benefit-item">
+                <i data-lucide="check-circle" style="width:20px; height:20px;"></i>
+                <div class="benefit-item-content">
+                  <h4>100% Middlemen Free</h4>
+                  <p>Keep 100% of the sales revenue and set your own agricultural crop prices.</p>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <i data-lucide="check-circle" style="width:20px; height:20px;"></i>
+                <div class="benefit-item-content">
+                  <h4>Direct Market Access</h4>
+                  <p>Reach thousands of consumers in cities without travel or wholesale agents.</p>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <i data-lucide="check-circle" style="width:20px; height:20px;"></i>
+                <div class="benefit-item-content">
+                  <h4>Secure & Fast Payments</h4>
+                  <p>Get money transferred directly to your bank account upon delivery validation.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="benefit-block">
+            <h3><i data-lucide="users"></i> For Consumers</h3>
+            <div class="benefit-items">
+              <div class="benefit-item">
+                <i data-lucide="check-circle" style="width:20px; height:20px;"></i>
+                <div class="benefit-item-content">
+                  <h4>Nutrient-Rich Freshness</h4>
+                  <p>Receive produce harvested hours ago instead of items stored in cold warehouses.</p>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <i data-lucide="check-circle" style="width:20px; height:20px;"></i>
+                <div class="benefit-item-content">
+                  <h4>Traceability to the Source</h4>
+                  <p>Know exactly which farm, village, and farmer grew the food your family eats.</p>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <i data-lucide="check-circle" style="width:20px; height:20px;"></i>
+                <div class="benefit-item-content">
+                  <h4>Fair, Honest Pricing</h4>
+                  <p>Slightly lower costs than grocery stores, while paying farmers much higher rates.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section id="featured">
+      <div class="container">
+        <div class="section-header">
+          <h2>Featured Fresh Harvests</h2>
+          <p>Hand-picked premium products listed today</p>
+        </div>
+        <div class="featured-grid" id="featured-products-container">
+          <!-- Dynamically filled with JS -->
+        </div>
+        <div style="text-align: center; margin-top: 40px;">
+          <button class="btn btn-secondary" onclick="app.navigateTo('/shop')">Browse All Products</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section id="stories" class="testimonials-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Success Stories</h2>
+          <p>Real voices from our organic network</p>
+        </div>
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <span class="quote-icon">“</span>
+            <p class="testimonial-text">"Before FarmConnect, I was selling my Nashik grapes to mandi traders for ₹40/kg. Today, I set my price at ₹120/kg. My income has tripled, and consumers get fresh grapes directly!"</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">RK</div>
+              <div class="author-details">
+                <h4>Rajesh Kumar</h4>
+                <p>Grape Cultivator, Nashik (MH)</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <span class="quote-icon">“</span>
+            <p class="testimonial-text">"The taste of Basmati rice grown by Sunita Devi is incredible. My kids now know who grows our rice, and we feel great knowing our money supports a hard-working family directly."</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">AM</div>
+              <div class="author-details">
+                <h4>Arjun Mehta</h4>
+                <p>Software Engineer, Bangalore</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <span class="quote-icon">“</span>
+            <p class="testimonial-text">"Living in Shimla, we have apples, but connecting to customers in cities like Delhi has changed our lives. I listed my crop and sold out 500kg of apples in just a week!"</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">AS</div>
+              <div class="author-details">
+                <h4>Amit Sharma</h4>
+                <p>Orchardist, Shimla (HP)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+      <div class="container contact-grid">
+        <div class="contact-info">
+          <h3>Get In Touch</h3>
+          <p>Have questions about direct procurement, logistics, or setting up a corporate partnership? Send us a message.</p>
+          <div class="contact-details">
+            <div class="contact-item">
+              <div class="contact-icon"><i data-lucide="mail"></i></div>
+              <div>
+                <h4 style="color:var(--text-dark); font-size:15px;">Email Us</h4>
+                <p style="font-size:14px;">contact@farmconnect.com</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><i data-lucide="phone"></i></div>
+              <div>
+                <h4 style="color:var(--text-dark); font-size:15px;">Call Support</h4>
+                <p style="font-size:14px;">+91 1800-456-7890 (Toll Free)</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><i data-lucide="map-pin"></i></div>
+              <div>
+                <h4 style="color:var(--text-dark); font-size:15px;">Headquarters</h4>
+                <p style="font-size:14px;">AgriTech Hub, Sector 62, Noida, UP - 201301</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form-container">
+          <form id="home-contact-form" onsubmit="event.preventDefault(); app.handleContactSubmit();">
+            <div class="form-group">
+              <label for="contact-name">Your Name</label>
+              <input type="text" id="contact-name" class="form-control" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+              <label for="contact-email">Email Address</label>
+              <input type="email" id="contact-email" class="form-control" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+              <label for="contact-msg">Message</label>
+              <textarea id="contact-msg" class="form-control" placeholder="How can we help you?" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ================= SHOP PAGE VIEW ================= -->
+  <main id="view-shop" class="view-container">
+    <section>
+      <div class="container">
+        <div class="section-header">
+          <h2>Marketplace</h2>
+          <p>Purchase fresh organic crops straight from farm owners</p>
+        </div>
+
+        <!-- Shop Controls -->
+        <div class="shop-toolbar">
+          <div class="search-box">
+            <i data-lucide="search" class="search-icon-svg" style="width:20px; height:20px;"></i>
+            <input type="text" id="shop-search" class="search-input" placeholder="Search products by name or farmer location..." oninput="app.filterProducts()">
+          </div>
+          <div class="category-filters">
+            <button class="filter-pill active" onclick="app.setShopCategory('All')" id="filter-all">All Crops</button>
+            <button class="filter-pill" onclick="app.setShopCategory('Vegetables')" id="filter-veg">Vegetables</button>
+            <button class="filter-pill" onclick="app.setShopCategory('Fruits')" id="filter-fruits">Fruits</button>
+            <button class="filter-pill" onclick="app.setShopCategory('Grains')" id="filter-grains">Grains</button>
+            <button class="filter-pill" onclick="app.setShopCategory('Organic')" id="filter-organic">Organic</button>
+          </div>
+        </div>
+
+        <div class="shop-results-info" id="shop-results-count">Showing all products...</div>
+
+        <!-- Shop Grid -->
+        <div class="shop-grid" id="shop-products-container">
+          <!-- Dynamically filled with ProductCard templates -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ================= PRODUCT DETAILS VIEW ================= -->
+  <main id="view-product-details" class="view-container">
+    <section>
+      <div class="container">
+        <button class="btn btn-outline" onclick="app.navigateTo('/shop')" style="margin-bottom: 24px;">
+          <i data-lucide="arrow-left" style="width:16px; height:16px;"></i> Back to Shop
+        </button>
+        
+        <div class="details-grid" id="product-details-content">
+          <!-- Dynamically loaded with product detailed data -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ================= SHOPPING CART VIEW ================= -->
+  <main id="view-cart" class="view-container">
+    <section>
+      <div class="container">
+        <div class="section-header">
+          <h2>Shopping Cart</h2>
+          <p>Review items in your cart and complete purchase</p>
+        </div>
+
+        <div class="cart-grid" id="cart-grid-container">
+          <!-- Left side: Cart List -->
+          <div class="cart-items-container" id="cart-items-list">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Right side: Cart Summary & Checkout -->
+          <div class="cart-summary" id="cart-summary-card">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div class="cart-empty-state" id="cart-empty-state" style="display:none;">
+          <i data-lucide="shopping-basket" style="width:64px; height:64px;"></i>
+          <h3>Your cart is empty</h3>
+          <p>Browse our catalog of fresh harvests to add products to your basket.</p>
+          <button class="btn btn-primary" onclick="app.navigateTo('/shop')">Browse Marketplace</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ================= REGISTRATION & AUTHENTICATION ================= -->
+  <main id="view-register" class="view-container">
+    <section style="padding:40px 0;">
+      <div class="container">
+        <div class="auth-grid">
+          
+          <div class="auth-sidebar">
+            <div class="auth-sidebar-brand" onclick="app.navigateTo('/')">
+              🌱 FarmConnect
+            </div>
+            <div class="auth-sidebar-content">
+              <h2>Join India's Fastest Growing Agri-Network</h2>
+              <p>Register as a Consumer to access fresh organic produce, or as a Farmer to sell directly to household kitchens and get higher returns.</p>
+            </div>
+            <div style="font-size: 13px; opacity: 0.8;">
+              College Project Presentation Module
+            </div>
+          </div>
+
+          <div class="auth-form-container">
+            <div class="auth-tabs">
+              <div class="auth-tab active" onclick="app.setAuthTab('consumer')" id="tab-consumer">Consumer Signup</div>
+              <div class="auth-tab" onclick="app.setAuthTab('farmer')" id="tab-farmer">Farmer Signup</div>
+            </div>
+
+            <!-- Consumer Signup Pane -->
+            <div id="pane-consumer" class="auth-form-pane active">
+              <h3 class="auth-form-title">Consumer Registration</h3>
+              <form id="consumer-reg-form" onsubmit="event.preventDefault(); app.handleConsumerRegister();">
+                <div class="form-group">
+                  <label for="cons-name">Full Name</label>
+                  <input type="text" id="cons-name" class="form-control" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                  <label for="cons-email">Email Address</label>
+                  <input type="email" id="cons-email" class="form-control" placeholder="name@domain.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="cons-mobile">Mobile Number</label>
+                  <input type="tel" id="cons-mobile" class="form-control" placeholder="e.g. +91 99887 76655" required>
+                </div>
+                <div class="form-group">
+                  <label for="cons-address">Delivery Address</label>
+                  <input type="text" id="cons-address" class="form-control" placeholder="Apartment, Street, City, State, ZIP" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:16px;">Sign Up as Consumer</button>
+              </form>
+            </div>
+
+            <!-- Farmer Signup Pane -->
+            <div id="pane-farmer" class="auth-form-pane">
+              <h3 class="auth-form-title">Farmer Registration</h3>
+              <form id="farmer-reg-form" onsubmit="event.preventDefault(); app.handleFarmerRegister();">
+                <div class="form-group">
+                  <label for="farm-owner">Farmer Full Name</label>
+                  <input type="text" id="farm-owner" class="form-control" placeholder="e.g. Rajesh Kumar" required>
+                </div>
+                <div class="form-group">
+                  <label for="farm-name">Farm / Business Name</label>
+                  <input type="text" id="farm-name" class="form-control" placeholder="e.g. Green Organic Farms" required>
+                </div>
+                <div class="form-group">
+                  <label for="farm-mobile">Mobile Number</label>
+                  <input type="tel" id="farm-mobile" class="form-control" placeholder="e.g. +91 98765 43210" required>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label for="farm-village">Village</label>
+                    <input type="text" id="farm-village" class="form-control" placeholder="Village name" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="farm-district">District & State</label>
+                    <input type="text" id="farm-district" class="form-control" placeholder="e.g. Nashik, MH" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="farm-crops">Products Grown</label>
+                  <input type="text" id="farm-crops" class="form-control" placeholder="e.g. Rice, Apples, Potatoes" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:16px;">Sign Up as Farmer</button>
+              </form>
+            </div>
+
+            <div style="margin-top:24px; padding-top:20px; border-top:1px solid var(--border-color); text-align:center;">
+              <span style="font-size:13px; color:var(--text-muted);">Demo credentials: </span>
+              <button class="btn btn-outline" style="padding:6px 12px; font-size:11px; margin-top:8px;" onclick="app.loginDemo('admin')">Login as Admin</button>
+              <button class="btn btn-outline" style="padding:6px 12px; font-size:11px; margin-top:8px;" onclick="app.loginDemo('farmer')">Login as Farmer</button>
+              <button class="btn btn-outline" style="padding:6px 12px; font-size:11px; margin-top:8px;" onclick="app.loginDemo('consumer')">Login as Consumer</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ================= FARMER DASHBOARD VIEW ================= -->
+  <main id="view-farmer-dashboard" class="view-container">
+    <section>
+      <div class="container">
+        <div class="section-header" style="margin-bottom:20px;">
+          <h2>Farmer Portal</h2>
+          <p>Manage your listed crops and fulfill received customer orders</p>
+        </div>
+
+        <div class="dashboard-layout">
+          <!-- Sidebar Nav -->
+          <div class="dashboard-sidebar">
+            <div class="db-user-card">
+              <div class="db-user-avatar" id="farmer-db-avatar">F</div>
+              <div class="db-user-name" id="farmer-db-name">Rajesh Kumar</div>
+              <div class="db-user-role">Farmer Account</div>
+            </div>
+            <div class="db-nav-menu">
+              <div class="db-nav-item active" onclick="app.setDbTab('farmer', 'products')" id="db-farm-tab-products">
+                <i data-lucide="package" style="width:18px; height:18px;"></i> My Crops
+              </div>
+              <div class="db-nav-item" onclick="app.setDbTab('farmer', 'add-product')" id="db-farm-tab-add">
+                <i data-lucide="plus-circle" style="width:18px; height:18px;"></i> List New Crop
+              </div>
+              <div class="db-nav-item" onclick="app.setDbTab('farmer', 'orders')" id="db-farm-tab-orders">
+                <i data-lucide="shopping-bag" style="width:18px; height:18px;"></i> Received Orders
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Panel Content -->
+          <div class="dashboard-main">
+            <!-- Section 1: Farmer Products List -->
+            <div id="farm-sec-products" class="db-section active">
+              <div class="table-card">
+                <div class="table-card-header">
+                  <h3>Active Crop Listings</h3>
+                  <button class="btn btn-primary" style="padding:8px 16px; font-size:13px;" onclick="app.setDbTab('farmer', 'add-product')">
+                    + Add New Product
+                  </button>
+                </div>
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price/kg</th>
+                        <th>Stock Qty</th>
+                        <th>Harvest Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="farmer-products-table-body">
+                      <!-- Loaded via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: List New Crop Form -->
+            <div id="farm-sec-add-product" class="db-section">
+              <div class="form-card">
+                <h3 style="margin-bottom:24px;">List a New Crop for Sale</h3>
+                <form id="add-product-form" onsubmit="event.preventDefault(); app.handleAddProduct();">
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label for="prod-name">Crop / Product Name</label>
+                      <input type="text" id="prod-name" class="form-control" placeholder="e.g. Organic Punjab Wheat" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="prod-cat">Category</label>
+                      <select id="prod-cat" class="form-control" required>
+                        <option value="Vegetables">Vegetables</option>
+                        <option value="Fruits">Fruits</option>
+                        <option value="Grains">Grains</option>
+                        <option value="Organic">Organic</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label for="prod-price">Price (₹ per kg)</label>
+                      <input type="number" id="prod-price" class="form-control" placeholder="e.g. 50" min="1" step="any" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="prod-qty">Available Stock (kg)</label>
+                      <input type="number" id="prod-qty" class="form-control" placeholder="e.g. 100" min="1" step="any" required>
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label for="prod-harvest">Harvest Date</label>
+                      <input type="date" id="prod-harvest" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="prod-image">Product Image Template</label>
+                      <select id="prod-image" class="form-control" required>
+                        <option value="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=600&q=80">Carrots (Orange)</option>
+                        <option value="https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80">Potatoes</option>
+                        <option value="https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=600&q=80">Tomatoes</option>
+                        <option value="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80">Wheat Grains</option>
+                        <option value="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80">Basmati Rice</option>
+                        <option value="https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80">Red Apples</option>
+                        <option value="https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=600&q=80">Grapes</option>
+                        <option value="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&w=600&q=80">Green Leafy Vegetables</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="prod-desc">Crop Description</label>
+                    <textarea id="prod-desc" class="form-control" placeholder="Describe the seed type, farming method, organic status..." required></textarea>
+                  </div>
+                  <div style="display:flex; gap:16px; margin-top:24px;">
+                    <button type="submit" class="btn btn-primary">List Product</button>
+                    <button type="button" class="btn btn-outline" onclick="app.setDbTab('farmer', 'products')">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Section 3: Farmer Received Orders -->
+            <div id="farm-sec-orders" class="db-section">
+              <div class="table-card">
+                <div class="table-card-header">
+                  <h3>Received Purchases</h3>
+                </div>
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Order ID</th>
+                        <th>Product</th>
+                        <th>Customer</th>
+                        <th>Quantity Ordered</th>
+                        <th>Earnings</th>
+                        <th>Order Status</th>
+                        <th>Manage Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="farmer-orders-table-body">
+                      <!-- Loaded via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ================= CONSUMER DASHBOARD VIEW ================= -->
+  <main id="view-consumer-dashboard" class="view-container">
+    <section>
+      <div class="container">
+        <div class="section-header" style="margin-bottom:20px;">
+          <h2>Consumer Portal</h2>
+          <p>Track your crop shipments and order history</p>
+        </div>
+
+        <div class="dashboard-layout">
+          <!-- Sidebar Nav -->
+          <div class="dashboard-sidebar">
+            <div class="db-user-card">
+              <div class="db-user-avatar" id="consumer-db-avatar">C</div>
+              <div class="db-user-name" id="consumer-db-name">Arjun Mehta</div>
+              <div class="db-user-role">Consumer Account</div>
+            </div>
+            <div class="db-nav-menu">
+              <div class="db-nav-item active">
+                <i data-lucide="history" style="width:18px; height:18px;"></i> Purchase History
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Panel Content -->
+          <div class="dashboard-main">
+            <div class="table-card">
+              <div class="table-card-header">
+                <h3>My Placed Orders</h3>
+              </div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Product</th>
+                      <th>Farmer Name</th>
+                      <th>Qty purchased</th>
+                      <th>Total Paid</th>
+                      <th>Order Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="consumer-orders-table-body">
+                    <!-- Loaded via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ================= ADMIN DASHBOARD VIEW ================= -->
+  <main id="view-admin-dashboard" class="view-container">
+    <section>
+      <div class="container">
+        <div class="section-header" style="margin-bottom:20px;">
+          <h2>System Admin Panel</h2>
+          <p>Complete dashboard oversight of all farmers, consumers, listed products, and orders</p>
+        </div>
+
+        <!-- System Statistics Grid -->
+        <div class="stats-grid" id="admin-stats-grid" style="margin-bottom:32px;">
+          <div class="stat-card">
+            <div class="stat-card-left">
+              <h4>Total Farmers</h4>
+              <div class="stat-value" id="stat-farmers">0</div>
+            </div>
+            <div class="stat-icon"><i data-lucide="tractor"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-left">
+              <h4>Total Consumers</h4>
+              <div class="stat-value" id="stat-consumers">0</div>
+            </div>
+            <div class="stat-icon"><i data-lucide="users"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-left">
+              <h4>Total Crops</h4>
+              <div class="stat-value" id="stat-products">0</div>
+            </div>
+            <div class="stat-icon"><i data-lucide="sprout"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-left">
+              <h4>Total Orders</h4>
+              <div class="stat-value" id="stat-orders">0</div>
+            </div>
+            <div class="stat-icon"><i data-lucide="shopping-bag"></i></div>
+          </div>
+        </div>
+
+        <div class="dashboard-layout">
+          <!-- Sidebar Nav -->
+          <div class="dashboard-sidebar">
+            <div class="db-user-card">
+              <div class="db-user-avatar" style="background:#ECEFF1; color:#37474F; border-color:#37474F;">A</div>
+              <div class="db-user-name">Administrator</div>
+              <div class="db-user-role" style="color:#C62828;">Sys-Admin</div>
+            </div>
+            <div class="db-nav-menu">
+              <div class="db-nav-item active" onclick="app.setDbTab('admin', 'farmers')" id="db-admin-tab-farmers">
+                <i data-lucide="tractor" style="width:18px; height:18px;"></i> Farmers List
+              </div>
+              <div class="db-nav-item" onclick="app.setDbTab('admin', 'consumers')" id="db-admin-tab-consumers">
+                <i data-lucide="users" style="width:18px; height:18px;"></i> Consumers List
+              </div>
+              <div class="db-nav-item" onclick="app.setDbTab('admin', 'products')" id="db-admin-tab-products">
+                <i data-lucide="sprout" style="width:18px; height:18px;"></i> Global Crop Listings
+              </div>
+              <div class="db-nav-item" onclick="app.setDbTab('admin', 'orders')" id="db-admin-tab-orders">
+                <i data-lucide="shopping-basket" style="width:18px; height:18px;"></i> All System Orders
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="dashboard-main">
+            <!-- Section 1: Farmers List -->
+            <div id="admin-sec-farmers" class="db-section active">
+              <div class="table-card">
+                <div class="table-card-header">
+                  <h3>Registered Farmers</h3>
+                </div>
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Farmer ID</th>
+                        <th>Owner Name</th>
+                        <th>Farm Name</th>
+                        <th>Contact</th>
+                        <th>Village & Region</th>
+                        <th>Crops Grown</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-farmers-table-body">
+                      <!-- JS populated -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: Consumers List -->
+            <div id="admin-sec-consumers" class="db-section">
+              <div class="table-card">
+                <div class="table-card-header">
+                  <h3>Registered Consumers</h3>
+                </div>
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Consumer ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Contact Number</th>
+                        <th>Delivery Address</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-consumers-table-body">
+                      <!-- JS populated -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Global Crops List -->
+            <div id="admin-sec-products" class="db-section">
+              <div class="table-card">
+                <div class="table-card-header">
+                  <h3>Active Crops Catalog</h3>
+                </div>
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Product ID</th>
+                        <th>Crop Name</th>
+                        <th>Category</th>
+                        <th>Price/kg</th>
+                        <th>Current Stock</th>
+                        <th>Farmer Name</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-products-table-body">
+                      <!-- JS populated -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 4: All System Orders -->
+            <div id="admin-sec-orders" class="db-section">
+              <div class="table-card">
+                <div class="table-card-header">
+                  <h3>All Registered Purchases</h3>
+                </div>
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Order ID</th>
+                        <th>Product</th>
+                        <th>Customer</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                        <th>Farmer Name</th>
+                        <th>Order Date</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-orders-table-body">
+                      <!-- JS populated -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ================= FOOTER & CONFIG WIDGET ================= -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-column footer-about">
+        <div class="footer-brand">
+          <!-- Mini leaf SVG -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12a10 10 0 0 1 10-10zm-1 5.243a3.5 3.5 0 0 1 4.95 0 3.5 3.5 0 0 1 0 4.95L12.007 14l-3.957-3.807a3.5 3.5 0 0 1 0-4.95 3.5 3.5 0 0 1 4.95 0z" fill="#81C784"/>
+          </svg>
+          <span>FarmConnect</span>
+        </div>
+        <p>A direct agricultural marketplace enabling local farmers to list fresh harvests and sell directly to consumers at honest rates. Built with high-performance CSS and a robust database design.</p>
+        <p style="font-size:12px; color:rgba(255,255,255,0.4);">© 2026 FarmConnect Startup Inc.</p>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Core Modules</h3>
+        <div class="footer-links">
+          <a onclick="app.navigateTo('/shop')">Browse marketplace</a>
+          <a onclick="app.navigateTo('/register?role=farmer')">Farmer enrollment</a>
+          <a onclick="app.navigateTo('/register?role=consumer')">Customer enrollment</a>
+          <a onclick="app.navigateTo('/cart')">Shopping Cart</a>
+        </div>
+      </div>
+
+      <div class="footer-column">
+        <h3>Presentation</h3>
+        <div class="footer-links">
+          <a onclick="app.navigateTo('/admin-dashboard')">Sys-Admin Console</a>
+          <a href="supabase_schema.sql" target="_blank">View Database SQL Schema</a>
+          <a onclick="app.loginDemo('farmer')">Demo Farmer Account</a>
+          <a onclick="app.loginDemo('consumer')">Demo Consumer Account</a>
+        </div>
+      </div>
+
+      <div class="footer-column footer-newsletter">
+        <h3>Newsletter</h3>
+        <p>Subscribe to receive weekly crop forecast and farm availability alerts.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); app.handleNewsletterSubmit();">
+          <input type="email" id="news-email" placeholder="Enter your email" required>
+          <button type="submit"><i data-lucide="arrow-right" style="width:16px; height:16px;"></i></button>
+        </form>
+      </div>
+    </div>
+
+    <!-- DB Connectivity settings widget (Ideal for presentations to prove it can connect to a real database) -->
+    <div class="container" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px;">
+      <div class="supabase-widget">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div class="supabase-widget-title">
+            <i data-lucide="database"></i>
+            <span>Supabase Connection Console</span>
+            <span id="supabase-status-pill" class="supabase-status-pill disconnected">LocalStorage Mock</span>
+          </div>
+          <button class="btn btn-outline" style="padding:6px 12px; font-size:12px; color:var(--earth-dark);" onclick="app.toggleConfigFields()">
+            Configure Supabase Connection
+          </button>
+        </div>
+        <div id="supabase-config-fields" style="display:none; flex-direction:column; gap:12px; margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-color);">
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">You can connect this front-end presentation directly to a live Supabase database! Create a new Supabase project, execute the SQL script in <a href="supabase_schema.sql" target="_blank" style="color:var(--primary-green); text-decoration:underline;">supabase_schema.sql</a>, paste your Project credentials below, and save.</p>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="sb-url">Supabase Project URL</label>
+              <input type="text" id="sb-url" class="form-control" placeholder="https://xxxxxx.supabase.co">
+            </div>
+            <div class="form-group">
+              <label for="sb-key">Supabase Anon Public API Key</label>
+              <input type="text" id="sb-key" class="form-control" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            </div>
+          </div>
+          <div style="display:flex; gap:12px; align-self:flex-start;">
+            <button class="btn btn-primary" style="padding:8px 16px; font-size:13px;" onclick="app.saveSupabaseConfig()">Save Credentials</button>
+            <button class="btn btn-outline" style="padding:8px 16px; font-size:13px; color:var(--earth-dark);" onclick="app.clearSupabaseConfig()">Reset to Mock Local DB</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic JS -->
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
