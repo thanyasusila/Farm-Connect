@@ -19,6 +19,9 @@
 </head>
 <body>
 
+  <!-- Live Activity Feed Ticker Banner -->
+  <div id="activity-ticker-container" class="activity-ticker-container"></div>
+
   <!-- Floating Toast Notifications -->
   <div id="toast-container" class="toast-container"></div>
 
@@ -307,6 +310,9 @@
           <div class="search-box">
             <i data-lucide="search" class="search-icon-svg" style="width:20px; height:20px;"></i>
             <input type="text" id="shop-search" class="search-input" placeholder="Search products by name or farmer location..." oninput="app.filterProducts()">
+            <button class="camera-btn" onclick="app.openPhotoSearch()" title="Search by Photo" type="button">
+              <i data-lucide="camera" style="width:20px; height:20px;"></i>
+            </button>
           </div>
           <div class="category-filters">
             <button class="filter-pill active" onclick="app.setShopCategory('All')" id="filter-all">All Crops</button>
@@ -1013,6 +1019,95 @@
           <i data-lucide="printer" style="width:16px; height:16px; display:inline-block; vertical-align:middle; margin-right:4px;"></i> Print Invoice
         </button>
         <button class="btn btn-outline" onclick="app.closeInvoiceModal()" id="btn-close-invoice">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= AI PHOTO SEARCH MODAL ================= -->
+  <div id="photo-search-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-container ai-search-modal">
+      <div class="modal-header">
+        <h3 id="txt-ai-search-title"><i data-lucide="sparkles" style="color:var(--primary-green); vertical-align:middle; margin-right:6px;"></i>AI Crop Scanner</h3>
+        <button class="btn-remove-cart" onclick="app.closePhotoSearch()" style="font-size: 24px; font-weight:700;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="txt-ai-search-desc" style="font-size:14px; color:var(--text-muted); margin-bottom:16px;">
+          Upload a crop photo or choose one of our demo samples to simulate our neural network crop variety scanner.
+        </p>
+        
+        <!-- Drag & Drop Zone -->
+        <div class="drop-zone" id="ai-drop-zone">
+          <div class="drop-zone-content" id="ai-drop-zone-content">
+            <i data-lucide="upload-cloud" style="width:48px; height:48px; color:var(--primary-green); margin-bottom:12px;"></i>
+            <p id="txt-upload-prompt" style="font-weight:600; color:var(--text-dark);">Drag & drop an image or click to upload</p>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Supports JPG, PNG (Max 5MB)</p>
+          </div>
+          <input type="file" id="ai-file-input" style="display:none;" accept="image/*" onchange="app.handlePhotoUpload(this.files[0])">
+          
+          <!-- Scanning Preview Box -->
+          <div class="scan-preview-box" id="ai-scan-preview-box" style="display:none;">
+            <img id="ai-preview-image" src="" alt="Crop Preview">
+            <div class="scan-laser" id="ai-scan-laser"></div>
+          </div>
+        </div>
+
+        <!-- Scanning Status & Progress -->
+        <div class="scan-status-container" id="ai-scan-status-container" style="display:none;">
+          <div class="scan-status-header">
+            <span id="txt-scanning-status" style="font-weight:600; color:var(--primary-green);">Analyzing image...</span>
+            <span id="scan-progress-percentage">0%</span>
+          </div>
+          <div class="scan-progress-track">
+            <div class="scan-progress-bar" id="ai-scan-progress-bar"></div>
+          </div>
+        </div>
+
+        <!-- Analysis Results -->
+        <div class="analysis-results" id="ai-analysis-results" style="display:none;">
+          <h4 id="txt-scan-results-title" style="margin-bottom:12px; font-weight:600;"><i data-lucide="check-circle" style="color:var(--primary-green); width:18px; height:18px; vertical-align:middle; margin-right:4px;"></i>Scan Results</h4>
+          <div class="result-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span class="detected-crop-name" id="ai-detected-crop">Alphonso Mango</span>
+              <span class="detected-confidence" id="ai-detected-confidence">98% Match</span>
+            </div>
+            <div class="confidence-bar-track">
+              <div class="confidence-bar" id="ai-confidence-bar" style="width: 98%;"></div>
+            </div>
+          </div>
+          <div style="margin-top:16px; display:flex; gap:12px;">
+            <button class="btn btn-primary" onclick="app.applyPhotoSearchFilter()" id="btn-apply-filter" style="flex:1;">
+              Show Matching Products
+            </button>
+            <button class="btn btn-outline" onclick="app.resetPhotoSearch()" id="btn-scan-again">
+              Scan Another
+            </button>
+          </div>
+        </div>
+
+        <!-- Demo Selectors -->
+        <div class="demo-selectors" id="ai-demo-selectors" style="margin-top:20px; border-top: 1px solid var(--border-color); padding-top:16px;">
+          <h4 id="txt-demo-title" style="font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:12px;">
+            Quick Demo: Click a crop to scan
+          </h4>
+          <div class="demo-grid">
+            <div class="demo-tile" onclick="app.simulateAIScan('alphonso')">
+              <img src="https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=120&q=80" alt="Alphonso">
+              <span class="demo-tile-label">Alphonso Mango</span>
+            </div>
+            <div class="demo-tile" onclick="app.simulateAIScan('neelum')">
+              <img src="https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=120&q=80" alt="Neelum">
+              <span class="demo-tile-label">Neelum Mango</span>
+            </div>
+            <div class="demo-tile" onclick="app.simulateAIScan('tomatoes')">
+              <img src="https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=120&q=80" alt="Tomato">
+              <span class="demo-tile-label">Tomato</span>
+            </div>
+            <div class="demo-tile" onclick="app.simulateAIScan('rice')">
+              <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=120&q=80" alt="Rice">
+              <span class="demo-tile-label">Basmati Rice</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

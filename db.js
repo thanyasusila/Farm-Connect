@@ -33,6 +33,14 @@ const DEFAULT_FARMERS = [
     contact_number: "+91 95432 10987",
     location: "Shimla, Himachal Pradesh",
     products: "Royal Delicious Apples, Walnuts"
+  },
+  {
+    id: "farmer_selvam",
+    name: "Selvam",
+    farm_name: "Madurai Organic Farms",
+    contact_number: "+91 94440 12345",
+    location: "Madurai, Tamil Nadu",
+    products: "Alphonso Mango, Neelum Mango, Banganapalli Mango, Madurai Turmeric"
   }
 ];
 
@@ -130,6 +138,50 @@ const DEFAULT_PRODUCTS = [
     description: "Freshly dug baby potatoes, thin skinned, excellent taste and texture.",
     harvest_date: "2026-06-17",
     image_url: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: "prod_alphonso",
+    product_name: "Alphonso Mango",
+    category: "Fruits",
+    price: 250.00,
+    quantity: 100.0,
+    farmer_id: "farmer_selvam",
+    description: "Premium Alphonso mangoes, known for their rich, sweet, and creamy flavor.",
+    harvest_date: "2026-06-22",
+    image_url: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: "prod_neelum",
+    product_name: "Neelum Mango",
+    category: "Fruits",
+    price: 150.00,
+    quantity: 120.0,
+    farmer_id: "farmer_selvam",
+    description: "Highly aromatic Neelum mangoes, sweet taste with a unique fiberless texture, direct from Madurai.",
+    harvest_date: "2026-06-23",
+    image_url: "https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: "prod_banganapalli",
+    product_name: "Banganapalli Mango",
+    category: "Fruits",
+    price: 180.00,
+    quantity: 150.0,
+    farmer_id: "farmer_selvam",
+    description: "Large-sized sweet Banganapalli mangoes, direct from our Madurai farm.",
+    harvest_date: "2026-06-21",
+    image_url: "https://images.unsplash.com/photo-1591073113125-e46713c829ed?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: "prod_turmeric",
+    product_name: "Organic Madurai Turmeric",
+    category: "Organic",
+    price: 90.00,
+    quantity: 300.0,
+    farmer_id: "farmer_selvam",
+    description: "Pure, high-curcumin turmeric powder, processed organically in Madurai.",
+    harvest_date: "2026-06-15",
+    image_url: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=600&q=80"
   }
 ];
 
@@ -209,12 +261,36 @@ function getSupabaseConfig() {
 function initMockDb() {
   if (!localStorage.getItem("fc_farmers")) {
     localStorage.setItem("fc_farmers", JSON.stringify(DEFAULT_FARMERS));
+  } else {
+    // Ensure Selvam is present in mock database if it was already initialized
+    const farmers = JSON.parse(localStorage.getItem("fc_farmers"));
+    if (!farmers.some(f => f.id === "farmer_selvam")) {
+      farmers.push(DEFAULT_FARMERS.find(f => f.id === "farmer_selvam"));
+      localStorage.setItem("fc_farmers", JSON.stringify(farmers));
+    }
   }
   if (!localStorage.getItem("fc_consumers")) {
     localStorage.setItem("fc_consumers", JSON.stringify(DEFAULT_CONSUMERS));
   }
   if (!localStorage.getItem("fc_products")) {
     localStorage.setItem("fc_products", JSON.stringify(DEFAULT_PRODUCTS));
+  } else {
+    // Ensure new products are present in mock database if it was already initialized
+    const products = JSON.parse(localStorage.getItem("fc_products"));
+    const newProductIds = ["prod_alphonso", "prod_neelum", "prod_banganapalli", "prod_turmeric"];
+    let updated = false;
+    for (const pid of newProductIds) {
+      if (!products.some(p => p.id === pid)) {
+        const prod = DEFAULT_PRODUCTS.find(p => p.id === pid);
+        if (prod) {
+          products.push(prod);
+          updated = true;
+        }
+      }
+    }
+    if (updated) {
+      localStorage.setItem("fc_products", JSON.stringify(products));
+    }
   }
   if (!localStorage.getItem("fc_orders")) {
     localStorage.setItem("fc_orders", JSON.stringify(DEFAULT_ORDERS));

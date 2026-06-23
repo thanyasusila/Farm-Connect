@@ -51,6 +51,32 @@ class FarmConnectApp {
     // Update UI elements for connection status
     this.updateDbStatusIndicator();
 
+    // Bind Drag & Drop for AI photo search
+    setTimeout(() => {
+      const dropZone = document.getElementById('ai-drop-zone');
+      if (dropZone) {
+        dropZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => {
+          dropZone.classList.remove('dragover');
+        });
+        dropZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropZone.classList.remove('dragover');
+          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            this.handlePhotoUpload(e.dataTransfer.files[0]);
+          }
+        });
+        dropZone.addEventListener('click', (ev) => {
+          if (ev.target !== document.getElementById('ai-file-input')) {
+            document.getElementById('ai-file-input').click();
+          }
+        });
+      }
+    }, 100);
+
     // Trigger router for current location hash
     this.handleRouting();
 
@@ -59,6 +85,9 @@ class FarmConnectApp {
 
     // Apply translation configurations
     this.applyLanguage();
+
+    // Start Real-time Live Activity Feed
+    this.startActivityFeed();
   }
 
   // ================= ROUTING & VIEW CONTROLLER =================
@@ -226,6 +255,114 @@ class FarmConnectApp {
     }
   }
 
+  // ================= BILINGUAL TRANSLATION HELPERS =================
+  getTranslatedProductName(id, defaultName) {
+    if (this.currentLang !== 'ta') return defaultName;
+    const names = {
+      "prod_grapes": "ஆர்கானிக் நாசிக் திராட்சை",
+      "prod_tomatoes": "புதிய தக்காளி",
+      "prod_rice": "பிரீமியம் பாஸ்மதி அரிசி",
+      "prod_wheat": "முழு கோதுமை (சர்பதி)",
+      "prod_apples": "இனிப்பு சிம்லா ஆப்பிள்",
+      "prod_carrots": "ஆர்கானிக் கேரட்",
+      "prod_potatoes": "புதிய உருளைக்கிழங்கு",
+      "prod_alphonso": "அல்போன்சா மாம்பழம்",
+      "prod_neelum": "நீலம் மாம்பழம்",
+      "prod_banganapalli": "பங்கனப்பள்ளி மாம்பழம்",
+      "prod_turmeric": "ஆர்கானிக் மதுரை மஞ்சள்"
+    };
+    return names[id] || defaultName;
+  }
+
+  getTranslatedFarmerName(name) {
+    if (this.currentLang !== 'ta') return name;
+    if (name === "Selvam") return "செல்வம்";
+    if (name === "Rajesh Kumar") return "ராஜேஷ் குமார்";
+    if (name === "Sunita Devi") return "சுனிதா தேவி";
+    if (name === "Ramesh Patil") return "ரமேஷ் பாட்டீல்";
+    if (name === "Amit Sharma") return "அமித் சர்மா";
+    return name;
+  }
+
+  getTranslatedProduct(p) {
+    if (this.currentLang !== 'ta') return p;
+
+    const productTranslations = {
+      "prod_grapes": {
+        name: "ஆர்கானிக் நாசிக் திராட்சை",
+        desc: "புதிதாக அறுவடை செய்யப்பட்ட, இனிப்பான, விதை இல்லாத கருப்பு ஆர்கானிக் திராட்சை.",
+        category: "பழங்கள்"
+      },
+      "prod_tomatoes": {
+        name: "புதிய தக்காளி",
+        desc: "பிரகாசமான சிவப்பு, ஜூசி பண்ணை-புதிய தக்காளி, சாலடுகள் மற்றும் குழம்புகளுக்கு ஏற்றது.",
+        category: "காயறிகள்"
+      },
+      "prod_rice": {
+        name: "பிரீமியம் பாஸ்மதி அரிசி",
+        desc: "பாரம்பரிய நீண்ட தானிய நறுமண பாஸ்மதி அரிசி, சிறந்த சுவை மற்றும் மென்மைக்காக 12 மாதங்கள் பழமையானது.",
+        category: "தானியங்கள்"
+      },
+      "prod_wheat": {
+        name: "முழு கோதுமை (சர்பதி)",
+        desc: "பஞ்சாபின் பொன் வயல்களில் இருந்து அறுவடை செய்யப்பட்ட ஊட்டச்சத்துக்கள் நிறைந்த பிரீமியம் தரமான கோதுமை.",
+        category: "தானியங்கள்"
+      },
+      "prod_apples": {
+        name: "இனிப்பு சிம்லா ஆப்பிள்",
+        desc: "சிம்லா பழத்தோட்டங்களில் இருந்து நேரடியாக கொண்டுவரப்பட்ட புதிய, இனிப்பான சிவப்பு ஆப்பிள்கள்.",
+        category: "பழங்கள்"
+      },
+      "prod_carrots": {
+        name: "ஆர்கானிக் கேரட்",
+        desc: "இனிப்பு, மொறுமொறுப்பான, பூச்சிக்கொல்லி இல்லாத ஆர்கானிக் கேரட், ஆரோக்கியமானது.",
+        category: "இயற்கை தயாரிப்பு"
+      },
+      "prod_potatoes": {
+        name: "புதிய உருளைக்கிழங்கு",
+        desc: "மெல்லிய தோல் கொண்ட, சிறந்த சுவை கொண்ட புதிய உருளைக்கிழங்கு.",
+        category: "காயறிகள்"
+      },
+      "prod_alphonso": {
+        name: "அல்போன்சா மாம்பழம்",
+        desc: "அல்போன்சா மாம்பழம், அதன் நறுமணம் மற்றும் இனிமையான சுவைக்காக உலகளவில் அறியப்படுகிறது.",
+        category: "பழங்கள்"
+      },
+      "prod_neelum": {
+        name: "நீலம் மாம்பழம்",
+        desc: "மதுரையிலிருந்து நேரடியாக கொண்டுவரப்பட்ட நார் இல்லாத சுவையான நீலம் மாம்பழம்.",
+        category: "பழங்கள்"
+      },
+      "prod_banganapalli": {
+        name: "பங்கனப்பள்ளி மாம்பழம்",
+        desc: "எங்கள் மதுரை பண்ணையிலிருந்து நேரடியாக பறிக்கப்பட்ட இனிப்பான பங்கனப்பள்ளி மாம்பழங்கள்.",
+        category: "பழங்கள்"
+      },
+      "prod_turmeric": {
+        name: "ஆர்கானிக் மதுரை மஞ்சள்",
+        desc: "மதுரையில் ஆர்கானிக் முறையில் விளைவிக்கப்பட்ட தூய மற்றும் உயர்தர மஞ்சள் தூள்.",
+        category: "இயற்கை தயாரிப்பு"
+      }
+    };
+
+    const trans = productTranslations[p.id];
+    if (trans) {
+      return {
+        ...p,
+        product_name: trans.name,
+        description: trans.desc,
+        category: trans.category,
+        farmer_name: p.farmer_name === "Selvam" ? "செல்வம்" : p.farmer_name,
+        location: p.location ? p.location.replace("Madurai, Tamil Nadu", "மதுரை, தமிழ்நாடு")
+                                          .replace("Nashik, Maharashtra", "நாசிக், மகாராஷ்டிரா")
+                                          .replace("Satara, Maharashtra", "சதாரா, மகாராஷ்டிரா")
+                                          .replace("Ludhiana, Punjab", "லூதியானா, பஞ்சாப்")
+                                          .replace("Shimla, Himachal Pradesh", "சிம்லா, இமாச்சல பிரதேசம்") : p.location
+      };
+    }
+    return p;
+  }
+
   // ================= DYNAMIC VIEWS RENDERING =================
 
   // 1. Homepage Rendering
@@ -317,10 +454,12 @@ class FarmConnectApp {
     this.filterProducts();
   }
 
-  createProductCardHtml(p) {
+  createProductCardHtml(rawP) {
+    const p = this.getTranslatedProduct(rawP);
     const isOutOfStock = parseFloat(p.quantity) <= 0;
     const stockClass = isOutOfStock ? 'out-of-stock' : 'in-stock';
-    const stockText = isOutOfStock ? 'Sold Out' : `${p.quantity} kg available`;
+    const isTa = this.currentLang === 'ta';
+    const stockText = isOutOfStock ? (isTa ? 'விற்றுத்தீர்ந்தது' : 'Sold Out') : (isTa ? `${p.quantity} கிலோ உள்ளது` : `${p.quantity} kg available`);
 
     return `
       <div class="product-card">
@@ -342,12 +481,12 @@ class FarmConnectApp {
           </div>
           
           <div class="price-stock-row">
-            <div class="product-price">₹${parseFloat(p.price).toFixed(2)} <span>/ kg</span></div>
+            <div class="product-price">₹${parseFloat(p.price).toFixed(2)} <span>/ ${isTa ? 'கிலோ' : 'kg'}</span></div>
             <span class="product-stock ${stockClass}">${stockText}</span>
           </div>
           
           <button class="btn-add-cart" onclick="app.addToCart('${p.id}', 1)" ${isOutOfStock ? 'disabled' : ''}>
-            <i data-lucide="shopping-cart" style="width:16px; height:16px;"></i> Add to Cart
+            <i data-lucide="shopping-cart" style="width:16px; height:16px;"></i> ${isTa ? 'வண்டியில் சேர்' : 'Add to Cart'}
           </button>
         </div>
       </div>
@@ -360,8 +499,8 @@ class FarmConnectApp {
     container.innerHTML = '<p style="text-align:center; grid-column:1/-1;">Loading harvest details...</p>';
 
     try {
-      const p = await window.db.getProductById(productId);
-      if (!p) {
+      const rawP = await window.db.getProductById(productId);
+      if (!rawP) {
         container.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;">
           <h3>Harvest item not found</h3>
           <p>This product might have been deleted by the farmer or does not exist.</p>
@@ -371,7 +510,9 @@ class FarmConnectApp {
         return;
       }
 
+      const p = this.getTranslatedProduct(rawP);
       const isOutOfStock = parseFloat(p.quantity) <= 0;
+      const isTa = this.currentLang === 'ta';
       
       container.innerHTML = `
         <div class="details-image-container">
@@ -384,7 +525,7 @@ class FarmConnectApp {
           <div class="details-farmer-card">
             <div class="farmer-avatar-large">${p.farmer_name ? p.farmer_name.substring(0, 2).toUpperCase() : 'F'}</div>
             <div class="farmer-card-details">
-              <h4>Grown by ${p.farmer_name || 'Rajesh Kumar'}</h4>
+              <h4>${isTa ? `விவசாயி: ${p.farmer_name}` : `Grown by ${p.farmer_name || 'Rajesh Kumar'}`}</h4>
               <p><i data-lucide="map-pin" style="width:12px; height:12px; display:inline-block; vertical-align:middle;"></i> ${p.location || 'Nashik, Maharashtra'}</p>
             </div>
           </div>
@@ -473,14 +614,15 @@ class FarmConnectApp {
       let subtotal = 0;
 
       for (const item of this.cart) {
-        const p = products.find(prod => prod.id === item.id);
-        if (!p) {
+        const rawP = products.find(prod => prod.id === item.id);
+        if (!rawP) {
           // Product doesn't exist anymore, remove from cart
           this.cart = this.cart.filter(c => c.id !== item.id);
           this.saveCart();
           continue;
         }
 
+        const p = this.getTranslatedProduct(rawP);
         const itemTotal = p.price * item.qty;
         subtotal += itemTotal;
 
@@ -511,30 +653,31 @@ class FarmConnectApp {
       // Render summary
       const deliveryCharge = subtotal >= 500 ? 0 : 50; // free delivery above 500
       const totalAmount = subtotal + deliveryCharge;
+      const isTa = this.currentLang === 'ta';
 
       const summaryCard = document.getElementById('cart-summary-card');
       summaryCard.innerHTML = `
-        <h3>Order Summary</h3>
+        <h3>${isTa ? 'ஆர்டர் சுருக்கம்' : 'Order Summary'}</h3>
         <div class="summary-row">
-          <span>Cart Subtotal</span>
+          <span>${isTa ? 'வண்டியின் மொத்த தொகை' : 'Cart Subtotal'}</span>
           <span>₹${subtotal.toFixed(2)}</span>
         </div>
         <div class="summary-row">
-          <span>Direct Delivery Charge</span>
-          <span>${deliveryCharge === 0 ? '<strong style="color:var(--primary-green)">FREE</strong>' : `₹${deliveryCharge.toFixed(2)}`}</span>
+          <span>${isTa ? 'நேரடி விநியோக கட்டணம்' : 'Direct Delivery Charge'}</span>
+          <span>${deliveryCharge === 0 ? `<strong style="color:var(--primary-green)">${isTa ? 'இலவசம்' : 'FREE'}</strong>` : `₹${deliveryCharge.toFixed(2)}`}</span>
         </div>
         <div class="summary-row" style="font-size: 12px; margin-bottom: 24px;">
-          <span>* Free delivery on orders above ₹500.00</span>
+          <span>${isTa ? '* ₹500.00க்கு மேல் ஆர்டர் செய்தால் இலவச டெலிவரி.' : '* Free delivery on orders above ₹500.00'}</span>
         </div>
         <div class="summary-row total">
-          <span>Grand Total</span>
+          <span>${isTa ? 'மொத்த தொகை' : 'Grand Total'}</span>
           <span class="total-price-val">₹${totalAmount.toFixed(2)}</span>
         </div>
         <button class="btn btn-primary btn-checkout" onclick="app.handleCheckout()">
-          Place Direct Order
+          ${isTa ? 'வாங்குதலை முடிக்கவும்' : 'Place Direct Order'}
         </button>
         <button class="btn btn-outline" style="width:100%; margin-top:12px;" onclick="app.navigateTo('/shop')">
-          Continue Shopping
+          ${isTa ? 'தொடர்ந்து வாங்குங்கள்' : 'Continue Shopping'}
         </button>
       `;
 
@@ -680,15 +823,19 @@ class FarmConnectApp {
           day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
         });
 
+        const pName = this.getTranslatedProductName(o.product_id, o.product_name);
+        const fName = this.getTranslatedFarmerName(o.farmer_name);
+        const isTa = this.currentLang === 'ta';
+
         return `
           <tr style="cursor:pointer;" onclick="app.showOrderDetails('${o.id}')" title="Click to view shipment tracking and invoice">
             <td><small>${o.id.substring(0, 8)}...</small></td>
-            <td><strong>${o.product_name}</strong></td>
-            <td>${o.farmer_name || 'Local Farmer'}</td>
+            <td><strong>${pName}</strong></td>
+            <td>${fName || 'Local Farmer'}</td>
             <td>${o.quantity} kg</td>
             <td><strong>₹${parseFloat(o.total_price).toFixed(2)}</strong></td>
             <td><span style="font-size:12px; color:var(--text-muted);">${orderDate}</span></td>
-            <td><span class="status-badge ${statusClass}">${o.order_status}</span></td>
+            <td><span class="status-badge ${statusClass}">${isTa ? (o.order_status === 'Pending' ? 'நிலுவையில்' : (o.order_status === 'Shipped' ? 'அனுப்பப்பட்டது' : 'டெலிவரி செய்யப்பட்டது')) : o.order_status}</span></td>
           </tr>
         `;
       }).join('');
@@ -1831,6 +1978,255 @@ class FarmConnectApp {
   closeInvoiceModal() {
     document.getElementById('invoice-modal').style.display = 'none';
   }
+
+  // ========================================================
+  // AI CROP SCANNER & PHOTO SEARCH LOGIC
+  // ========================================================
+  openPhotoSearch() {
+    const modal = document.getElementById('photo-search-modal');
+    if (modal) {
+      modal.style.display = 'flex';
+      this.resetPhotoSearch();
+    }
+  }
+
+  closePhotoSearch() {
+    const modal = document.getElementById('photo-search-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  }
+
+  resetPhotoSearch() {
+    document.getElementById('ai-drop-zone-content').style.display = 'flex';
+    document.getElementById('ai-scan-preview-box').style.display = 'none';
+    document.getElementById('ai-scan-status-container').style.display = 'none';
+    document.getElementById('ai-analysis-results').style.display = 'none';
+    document.getElementById('ai-file-input').value = '';
+    this.detectedCropFilter = '';
+  }
+
+  handlePhotoUpload(file) {
+    if (!file) return;
+
+    // Read the file and display it
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Determine cropKey from filename
+      const name = file.name.toLowerCase();
+      let cropKey = 'alphonso';
+      if (name.includes('neelum')) cropKey = 'neelum';
+      else if (name.includes('banganapalli')) cropKey = 'banganapalli';
+      else if (name.includes('mango')) cropKey = 'alphonso';
+      else if (name.includes('tomato')) cropKey = 'tomatoes';
+      else if (name.includes('rice')) cropKey = 'rice';
+      else if (name.includes('turmeric')) cropKey = 'turmeric';
+      else {
+        // Random crop fallback
+        const crops = ['alphonso', 'neelum', 'tomatoes', 'rice', 'turmeric'];
+        cropKey = crops[Math.floor(Math.random() * crops.length)];
+      }
+
+      this.runScanningSimulation(cropKey, e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  simulateAIScan(cropKey) {
+    const cropImages = {
+      alphonso: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80',
+      neelum: 'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=600&q=80',
+      tomatoes: 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=600&q=80',
+      rice: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80',
+      turmeric: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=600&q=80'
+    };
+    this.runScanningSimulation(cropKey, cropImages[cropKey]);
+  }
+
+  runScanningSimulation(cropKey, imageSrc) {
+    // Hide upload zone and show preview with laser line
+    document.getElementById('ai-drop-zone-content').style.display = 'none';
+    const previewBox = document.getElementById('ai-scan-preview-box');
+    previewBox.style.display = 'flex';
+    document.getElementById('ai-preview-image').src = imageSrc;
+    
+    const statusContainer = document.getElementById('ai-scan-status-container');
+    statusContainer.style.display = 'block';
+    
+    document.getElementById('ai-analysis-results').style.display = 'none';
+
+    const progressBar = document.getElementById('ai-scan-progress-bar');
+    const progressPerc = document.getElementById('scan-progress-percentage');
+    const statusText = document.getElementById('txt-scanning-status');
+
+    const isTa = this.currentLang === 'ta';
+    statusText.innerText = isTa ? 'விளக்கப்படத்தை பகுப்பாய்வு செய்கிறது...' : 'Analyzing image...';
+
+    let progress = 0;
+    progressBar.style.width = '0%';
+    progressPerc.innerText = '0%';
+
+    const interval = setInterval(() => {
+      progress += 5;
+      progressBar.style.width = `${progress}%`;
+      progressPerc.innerText = `${progress}%`;
+
+      if (progress >= 40 && progress < 80) {
+        statusText.innerText = isTa ? 'அம்சங்களை பிரித்தெடுக்கிறது...' : 'Extracting crop features...';
+      } else if (progress >= 80 && progress < 100) {
+        statusText.innerText = isTa ? 'தரவுத்தளத்துடன் ஒப்பிடுகிறது...' : 'Matching with database...';
+      }
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        this.showScanResults(cropKey);
+      }
+    }, 100);
+  }
+
+  showScanResults(cropKey) {
+    document.getElementById('ai-scan-status-container').style.display = 'none';
+    const resultsContainer = document.getElementById('ai-analysis-results');
+    resultsContainer.style.display = 'block';
+
+    const isTa = this.currentLang === 'ta';
+
+    const cropData = {
+      alphonso: {
+        enName: 'Alphonso Mango',
+        taName: 'அல்போன்சா மாம்பழம்',
+        confidence: 98,
+        filter: 'Alphonso'
+      },
+      neelum: {
+        enName: 'Neelum Mango',
+        taName: 'நீலம் மாம்பழம்',
+        confidence: 96,
+        filter: 'Neelum'
+      },
+      banganapalli: {
+        enName: 'Banganapalli Mango',
+        taName: 'பங்கனப்பள்ளி மாம்பழம்',
+        confidence: 97,
+        filter: 'Banganapalli'
+      },
+      tomatoes: {
+        enName: 'Fresh Vine Tomatoes',
+        taName: 'தக்காளி',
+        confidence: 99,
+        filter: 'Tomatoes'
+      },
+      rice: {
+        enName: 'Premium Basmati Rice',
+        taName: 'பாஸ்மதி அரிசி',
+        confidence: 95,
+        filter: 'Rice'
+      },
+      turmeric: {
+        enName: 'Organic Madurai Turmeric',
+        taName: 'மதுரை மஞ்சள்',
+        confidence: 94,
+        filter: 'Turmeric'
+      }
+    };
+
+    const detected = cropData[cropKey] || cropData['alphonso'];
+    const cropName = isTa ? detected.taName : detected.enName;
+    
+    document.getElementById('ai-detected-crop').innerText = cropName;
+    document.getElementById('ai-detected-confidence').innerText = `${detected.confidence}% ${isTa ? 'பொருத்தம்' : 'Match'}`;
+    
+    const confidenceBar = document.getElementById('ai-confidence-bar');
+    confidenceBar.style.width = `${detected.confidence}%`;
+
+    this.detectedCropFilter = detected.filter;
+  }
+
+  applyPhotoSearchFilter() {
+    if (this.detectedCropFilter) {
+      // Ensure we navigate to the shop page first
+      this.navigateTo('/shop');
+      const searchBox = document.getElementById('shop-search');
+      if (searchBox) {
+        searchBox.value = this.detectedCropFilter;
+        // Trigger filter
+        this.filterProducts();
+      }
+      this.closePhotoSearch();
+      this.showToast(this.currentLang === 'en' ? `Filtered by crop: ${this.detectedCropFilter}` : `பயிர் வடிகட்டி: ${this.detectedCropFilter}`, 'success');
+    }
+  }
+
+  // ========================================================
+  // REAL-TIME LIVE ACTIVITY FEED LOGIC
+  // ========================================================
+  startActivityFeed() {
+    const activities = [
+      {
+        en: "Buyer <strong>Arjun Mehta</strong> just ordered 5kg of <strong>Organic Nashik Grapes</strong>!",
+        ta: "வாங்குபவர் <strong>அர்ஜுன் மேத்தா</strong> 5 கிலோ <strong>ஆர்கானிக் நாசிக் திராட்சை</strong> ஆர்டர் செய்துள்ளார்!"
+      },
+      {
+        en: "Farmer <strong>Selvam</strong> just listed 100kg of fresh <strong>Alphonso Mangoes</strong> from Madurai!",
+        ta: "விவசாயி <strong>செல்வம்</strong> மதுரையிலிருந்து 100 கிலோ புதிய <strong>அல்போன்சா மாம்பழங்களை</strong> பட்டியலிட்டுள்ளார்!"
+      },
+      {
+        en: "Buyer <strong>Priya Sharma</strong> just reviewed <strong>Sweet Shimla Apples</strong>: ⭐⭐⭐⭐⭐",
+        ta: "வாங்குபவர் <strong>பிரியா சர்மா</strong> <strong>சிம்லா ஆப்பிள்களை</strong> மதிப்பீடு செய்துள்ளார்: ⭐⭐⭐⭐⭐"
+      },
+      {
+        en: "Farmer <strong>Sunita Devi</strong> updated stock: 500kg of <strong>Basmati Rice</strong> is ready for harvest!",
+        ta: "விவசாயி <strong>சுனிதா தேவி</strong> இருப்பை புதுப்பித்துள்ளார்: 500 கிலோ <strong>பாஸ்மதி அரிசி</strong> அறுவடைக்கு தயாராக உள்ளது!"
+      },
+      {
+        en: "New farmer <strong>Selvam</strong> from Madurai registered to the network!",
+        ta: "மதுரையிலிருந்து புதிய விவசாயி <strong>செல்வம்</strong> நெட்வொர்க்கில் இணைந்துள்ளார்!"
+      },
+      {
+        en: "Order #FC-489A shipped via <strong>FarmConnect Direct Logistics</strong> to Bangalore!",
+        ta: "ஆர்டர் #FC-489A <strong>பார்ம்கனெக்ட் லாஜிஸ்டிக்ஸ்</strong> மூலம் பெங்களூருக்கு அனுப்பப்பட்டது!"
+      },
+      {
+        en: "Farmer <strong>Ramesh Patil</strong> listed new harvest of <strong>Strawberries</strong> in Satara!",
+        ta: "விவசாயி <strong>ரமேஷ் பாட்டீல்</strong> சதாராவில் புதிய <strong>ஸ்ட்ராபெர்ரி</strong> அறுவடையை பட்டியலிட்டுள்ளார்!"
+      }
+    ];
+
+    // Trigger one immediately after 3 seconds
+    setTimeout(() => this.showActivityTicker(activities), 3000);
+
+    // Then interval every 20 seconds
+    setInterval(() => {
+      this.showActivityTicker(activities);
+    }, 20000);
+  }
+
+  showActivityTicker(activities) {
+    const container = document.getElementById('activity-ticker-container');
+    if (!container) return;
+
+    // Pick a random activity
+    const index = Math.floor(Math.random() * activities.length);
+    const act = activities[index];
+    const message = this.currentLang === 'en' ? act.en : act.ta;
+
+    // Create element
+    const card = document.createElement('div');
+    card.className = 'activity-ticker-card';
+    card.innerHTML = `
+      <div class="activity-ticker-icon">
+        <i data-lucide="bell" style="width:14px; height:14px;"></i>
+      </div>
+      <div class="activity-ticker-message">${message}</div>
+    `;
+
+    // Clear previous if any
+    container.innerHTML = '';
+    container.appendChild(card);
+
+    // Re-create icons for the new card
+    lucide.createIcons();
+  }
 }
 
 // BILINGUAL LANGUAGE DICTIONARY DECLARATION
@@ -1850,7 +2246,15 @@ const TRANSLATIONS = {
     "btn-submit-review": "Submit Review",
     "txt-invoice-header-title": "Order Invoice",
     "btn-print-invoice-action": "Print Invoice",
-    "btn-close-invoice": "Close"
+    "btn-close-invoice": "Close",
+    "txt-ai-search-title": "AI Crop Scanner",
+    "txt-ai-search-desc": "Upload a crop photo or choose one of our demo samples to simulate our neural network crop variety scanner.",
+    "txt-upload-prompt": "Drag & drop an image or click to upload",
+    "txt-scan-results-title": "Scan Results",
+    "btn-apply-filter": "Show Matching Products",
+    "btn-scan-again": "Scan Another",
+    "txt-demo-title": "Quick Demo: Click a crop to scan",
+    "txt-scanning-status": "Analyzing image..."
   },
   ta: {
     "nav-home": "முகப்பு",
@@ -1867,7 +2271,15 @@ const TRANSLATIONS = {
     "btn-submit-review": "கருத்தை சமர்ப்பிக்கவும்",
     "txt-invoice-header-title": "வரி விலைப்பட்டியல் (Invoice)",
     "btn-print-invoice-action": "பில் பிரிண்ட் செய்க",
-    "btn-close-invoice": "மூடு"
+    "btn-close-invoice": "மூடு",
+    "txt-ai-search-title": "AI பயிர் ஸ்கேனர்",
+    "txt-ai-search-desc": "எங்கள் நரம்பியல் நெட்வொர்க் பயிர் வகை ஸ்கேனரை உருவகப்படுத்த பயிர் புகைப்படத்தை பதிவேற்றவும் அல்லது டெமோ மாதிரிகளில் ஒன்றை தேர்வு செய்யவும்.",
+    "txt-upload-prompt": "படத்தை இழுத்து விடவும் அல்லது பதிவேற்ற கிளிக் செய்யவும்",
+    "txt-scan-results-title": "ஸ்கேன் முடிவுகள்",
+    "btn-apply-filter": "பொருந்தும் தயாரிப்புகளைக் காட்டு",
+    "btn-scan-again": "மீண்டும் ஸ்கேன் செய்க",
+    "txt-demo-title": "விரைவு டெமோ: ஸ்கேன் செய்ய ஒரு பயிரைக் கிளிக் செய்க",
+    "txt-scanning-status": "பகுப்பாய்வு செய்கிறது..."
   }
 };
 
