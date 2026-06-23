@@ -1412,7 +1412,7 @@ class FarmConnectApp {
 
     // 8. Footer Columns
     const footerHeaders = document.querySelectorAll('footer .footer-column h3');
-    if (footerHeaders.length === 4) {
+    if (footerHeaders.length === 3) {
       footerHeaders[0].innerText = isTa ? 'செயல்பாடுகள்' : 'Core Modules';
       footerHeaders[1].innerText = isTa ? 'விளக்கம் / உதவிகள்' : 'Presentation';
       footerHeaders[2].innerText = isTa ? 'செய்தி மடல்' : 'Newsletter';
