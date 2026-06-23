@@ -7,6 +7,9 @@ class FarmConnectApp {
     this.currentView = 'home';
     this.shopCategory = 'All';
     this.activeProductDetailsId = null;
+    this.currentLang = 'en';
+    this.selectedRating = 5;
+    this.activeOrderDetailsId = null;
 
     // Selected tabs within dashboards
     this.farmerDbTab = 'products';
@@ -39,6 +42,12 @@ class FarmConnectApp {
       this.cart = JSON.parse(savedCart);
     }
 
+    // Load language if exists
+    const savedLang = localStorage.getItem('fc_lang');
+    if (savedLang) {
+      this.currentLang = savedLang;
+    }
+
     // Update UI elements for connection status
     this.updateDbStatusIndicator();
 
@@ -47,6 +56,9 @@ class FarmConnectApp {
 
     // Setup initial product counters and cart badges
     this.updateCartBadge();
+
+    // Apply translation configurations
+    this.applyLanguage();
   }
 
   // ================= ROUTING & VIEW CONTROLLER =================
@@ -412,6 +424,7 @@ class FarmConnectApp {
           </div>
         </div>
       `;
+      this.renderReviewsForProduct(productId);
       lucide.createIcons();
     } catch (e) {
       console.error(e);
@@ -668,7 +681,7 @@ class FarmConnectApp {
         });
 
         return `
-          <tr>
+          <tr style="cursor:pointer;" onclick="app.showOrderDetails('${o.id}')" title="Click to view shipment tracking and invoice">
             <td><small>${o.id.substring(0, 8)}...</small></td>
             <td><strong>${o.product_name}</strong></td>
             <td>${o.farmer_name || 'Local Farmer'}</td>
@@ -1232,7 +1245,632 @@ class FarmConnectApp {
       pill.className = 'supabase-status-pill disconnected';
     }
   }
+
+  // ========================================================
+  // BILINGUAL SUPPORT (ENGLISH & TAMIL)
+  // ========================================================
+  toggleLanguage() {
+    this.currentLang = this.currentLang === 'en' ? 'ta' : 'en';
+    this.applyLanguage();
+    this.showToast(this.currentLang === 'en' ? 'Language switched to English' : 'மொழி தமிழிற்கு மாற்றப்பட்டது', 'success');
+  }
+
+  applyLanguage() {
+    localStorage.setItem('fc_lang', this.currentLang);
+    
+    // Update button text in header
+    const btnText = document.getElementById('lang-btn-text');
+    if (btnText) {
+      btnText.innerText = this.currentLang === 'en' ? 'தமிழ்' : 'English';
+    }
+
+    const dict = TRANSLATIONS[this.currentLang];
+    
+    // Translate standard elements by ID
+    for (const key in dict) {
+      const el = document.getElementById(key);
+      if (el) {
+        // Check if input/textarea
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          if (el.placeholder) {
+            el.placeholder = dict[key];
+          }
+        } else {
+          el.innerText = dict[key];
+        }
+      }
+    }
+
+    // Dynamic Context Translations
+    this.translateStaticHTML();
+    
+    // Refresh active view to apply translations
+    if (this.currentView === 'home') this.renderHome();
+    if (this.currentView === 'shop') this.filterProducts();
+    if (this.currentView === 'product-details') this.renderProductDetails(this.activeProductDetailsId);
+    if (this.currentView === 'cart') this.renderCart();
+    if (this.currentView === 'consumer-dashboard') this.renderConsumerDashboard();
+    if (this.currentView === 'farmer-dashboard') this.refreshFarmerDbContent();
+    if (this.currentView === 'admin-dashboard') this.renderAdminDashboard();
+  }
+
+  translateStaticHTML() {
+    const isTa = this.currentLang === 'ta';
+    
+    // 1. Hero Section
+    const heroTitle = document.querySelector('.hero-content h1');
+    if (heroTitle) {
+      heroTitle.innerHTML = isTa 
+        ? 'விவசாய நிலத்திலிருந்து நேரடி,<br><span>உங்கள் இல்லத்திற்கு!</span>' 
+        : 'Fresh From Farm,<br><span>Direct To Your Home</span>';
+    }
+    const heroSub = document.querySelector('.hero-content p');
+    if (heroSub) {
+      heroSub.innerText = isTa
+        ? 'இடைத்தரகர்கள் இன்றி, உள்ளூர் விவசாயிகளிடமிருந்து நேரடியாக புதிய விளைபொருட்களை நியாயமான விலையில் வாங்கி மகிழுங்கள்.'
+        : 'Buy fresh produce directly from local farmers while helping them earn better profits by removing middlemen.';
+    }
+    const heroBtn1 = document.querySelector('.hero-buttons .btn-primary');
+    if (heroBtn1) {
+      heroBtn1.innerText = isTa ? 'இப்போதே வாங்குங்கள்' : 'Shop Now';
+    }
+    const heroBtn2 = document.querySelector('.hero-buttons .btn-secondary');
+    if (heroBtn2) {
+      heroBtn2.innerText = isTa ? 'விவசாயியாக பதிவு செய்க' : 'Register as Farmer';
+    }
+
+    // 2. How it works section
+    const howTitle = document.querySelector('#how-it-works .section-header h2');
+    if (howTitle) howTitle.innerText = isTa ? 'செயல்முறை விளக்கம்' : 'How FarmConnect Works';
+    const howSub = document.querySelector('#how-it-works .section-header p');
+    if (howSub) howSub.innerText = isTa ? 'விளைநிலத்தையும் நுகர்வோரையும் இணைக்கும் 3 எளிய வழிகள்' : 'Connecting soil and spoon in three simple steps';
+
+    const cards = document.querySelectorAll('#how-it-works .workflow-card');
+    if (cards.length === 3) {
+      // Card 1
+      cards[0].querySelector('h3').innerText = isTa ? 'விவசாயி பதிவு' : 'Farmers Register';
+      cards[0].querySelector('p').innerText = isTa ? 'விவசாயிகள் தங்களின் புதிய அறுவடை, விலை மற்றும் இருப்பு விவரங்களை எளிய முறையில் பதிவு செய்கின்றனர்.' : 'Farmers list their fresh harvests, upload descriptions, locations, and set fair prices per kilogram.';
+      // Card 2
+      cards[1].querySelector('h3').innerText = isTa ? 'நுகர்வோர் தேர்வு' : 'Consumers Shop';
+      cards[1].querySelector('p').innerText = isTa ? 'வாங்குபவர்கள் காய்கறிகள், பழங்கள் மற்றும் தானியங்களை ஒப்பிட்டு தங்களுக்கு தேவையானதை ஆர்டர் செய்கிறார்கள்.' : 'Customers browse the shop by categories (Vegetables, Fruits, Grains, Organic) and place direct orders.';
+      // Card 3
+      cards[2].querySelector('h3').innerText = isTa ? 'நேரடி விநியோகம்' : 'Direct Delivery';
+      cards[2].querySelector('p').innerText = isTa ? 'விளைபொருட்கள் பண்ணையிலிருந்து நேரடியாக பேக் செய்யப்பட்டு புதிய சுவையுடன் உங்கள் வீட்டு வாசலுக்கு விநியோகிக்கப்படும்.' : 'Produce is packed at the farm and delivered directly to the consumer\'s doorstep, retaining full freshness.';
+    }
+
+    // 3. Benefits Section
+    const benTitle = document.querySelector('#benefits .section-header h2');
+    if (benTitle) benTitle.innerText = isTa ? 'இருதரப்பு நன்மைகள்' : 'Empowering both ends of the chain';
+    const benSub = document.querySelector('#benefits .section-header p');
+    if (benSub) benSub.innerText = isTa ? 'நேரடி கொள்முதல் ஏன் சிறந்தது?' : 'Why choose direct-from-farm connection?';
+
+    const blocks = document.querySelectorAll('#benefits .benefit-block');
+    if (blocks.length === 2) {
+      // Farmer benefit
+      blocks[0].querySelector('h3').innerHTML = isTa ? '<i data-lucide="sprout"></i> விவசாயிகளுக்கு' : '<i data-lucide="sprout"></i> For Farmers';
+      const itemsF = blocks[0].querySelectorAll('.benefit-item-content');
+      if (itemsF.length === 3) {
+        itemsF[0].querySelector('h4').innerText = isTa ? '100% தரகர்கள் இல்லை' : '100% Middlemen Free';
+        itemsF[0].querySelector('p').innerText = isTa ? 'உங்கள் உழைப்பின் முழு லாபத்தையும் நீங்களே பெற்றுக்கொண்டு விற்பனை விலையை நீங்களே தீர்மானியுங்கள்.' : 'Keep 100% of the sales revenue and set your own agricultural crop prices.';
+        itemsF[1].querySelector('h4').innerText = isTa ? 'நேரடி சந்தை இணைப்பு' : 'Direct Market Access';
+        itemsF[1].querySelector('p').innerText = isTa ? 'அலைச்சல் இன்றி, பெருநகரங்களில் இருக்கும் ஆயிரக்கணக்கான நுகர்வோரை நேரடியாக சென்றடையலாம்.' : 'Reach thousands of consumers in cities without travel or wholesale agents.';
+        itemsF[2].querySelector('h4').innerText = isTa ? 'பாதுகாப்பான கொடுப்பனவுகள்' : 'Secure & Fast Payments';
+        itemsF[2].querySelector('p').innerText = isTa ? 'அறுவடை டெலிவரி செய்யப்பட்டவுடன் உங்கள் வங்கி கணக்கில் நேரடியாக பணம் செலுத்தப்படும்.' : 'Get money transferred directly to your bank account upon delivery validation.';
+      }
+
+      // Consumer benefit
+      blocks[1].querySelector('h3').innerHTML = isTa ? '<i data-lucide="users"></i> நுகர்வோருக்கு' : '<i data-lucide="users"></i> For Consumers';
+      const itemsC = blocks[1].querySelectorAll('.benefit-item-content');
+      if (itemsC.length === 3) {
+        itemsC[0].querySelector('h4').innerText = isTa ? 'புதிய மற்றும் ஆரோக்கியம்' : 'Nutrient-Rich Freshness';
+        itemsC[0].querySelector('p').innerText = isTa ? 'குளிர்சாதன கிடங்குகளில் சேமிக்கப்படாத, சில மணி நேரங்களுக்கு முன் அறுவடை செய்யப்பட்ட புதிய காய்கறிகள்.' : 'Receive produce harvested hours ago instead of items stored in cold warehouses.';
+        itemsC[1].querySelector('h4').innerText = isTa ? 'விவசாயி விவரங்கள்' : 'Traceability to the Source';
+        itemsC[1].querySelector('p').innerText = isTa ? 'உங்கள் உணவு எந்த கிராமத்தில், எந்த விவசாயியால் பயிரிடப்பட்டது என்ற முழு விவரங்களை அறியலாம்.' : 'Know exactly which farm, village, and farmer grew the food your family eats.';
+        itemsC[2].querySelector('h4').innerText = isTa ? 'நியாயமான விலை' : 'Fair, Honest Pricing';
+        itemsC[2].querySelector('p').innerText = isTa ? 'சூப்பர் மார்க்கெட்களை விட குறைந்த விலை, ஆனால் விவசாயிக்கு அதிக லாபம் தரும் விலை.' : 'Slightly lower costs than grocery stores, while paying farmers much higher rates.';
+      }
+    }
+
+    // 4. Shop Page filters
+    const filterAll = document.getElementById('filter-all');
+    if (filterAll) filterAll.innerText = isTa ? 'அனைத்து பயிர்கள்' : 'All Crops';
+    const filterVeg = document.getElementById('filter-veg');
+    if (filterVeg) filterVeg.innerText = isTa ? 'காய்கறிகள்' : 'Vegetables';
+    const filterFruits = document.getElementById('filter-fruits');
+    if (filterFruits) filterFruits.innerText = isTa ? 'பழங்கள்' : 'Fruits';
+    const filterGrains = document.getElementById('filter-grains');
+    if (filterGrains) filterGrains.innerText = isTa ? 'தானியங்கள்' : 'Grains';
+    const filterOrganic = document.getElementById('filter-organic');
+    if (filterOrganic) filterOrganic.innerText = isTa ? 'இயற்கை தயாரிப்பு' : 'Organic';
+
+    // 5. Featured product headers
+    const featHead = document.querySelector('#featured .section-header h2');
+    if (featHead) featHead.innerText = isTa ? 'இன்றைய புதிய அறுவடைகள்' : 'Featured Fresh Harvests';
+    const featSub = document.querySelector('#featured .section-header p');
+    if (featSub) featSub.innerText = isTa ? 'விவசாயிகளிடமிருந்து இன்று பட்டியலிடப்பட்ட விளைபொருட்கள்' : 'Hand-picked premium products listed today';
+
+    // 6. Testimonial Section
+    const storyHead = document.querySelector('#stories .section-header h2');
+    if (storyHead) storyHead.innerText = isTa ? 'வெற்றியாளர்களின் குரல்' : 'Success Stories';
+    const storySub = document.querySelector('#stories .section-header p');
+    if (storySub) storySub.innerText = isTa ? 'எங்கள் விவசாய குடும்பங்களின் நேரடி அனுபவங்கள்' : 'Real voices from our organic network';
+
+    // 7. Contact Section
+    const contactHead = document.querySelector('#contact .contact-info h3');
+    if (contactHead) contactHead.innerText = isTa ? 'தொடர்பு கொள்ள' : 'Get In Touch';
+    const contactSub = document.querySelector('#contact .contact-info p');
+    if (contactSub) contactSub.innerText = isTa ? 'நேரடி கொள்முதல், விநியோக முறைகள் பற்றி மேலும் அறிய எங்களை தொடர்பு கொள்ளுங்கள்.' : 'Have questions about direct procurement, logistics, or setting up a corporate partnership? Send us a message.';
+    
+    const contactLabels = document.querySelectorAll('#home-contact-form label');
+    if (contactLabels.length === 3) {
+      contactLabels[0].innerText = isTa ? 'உங்கள் பெயர்' : 'Your Name';
+      contactLabels[1].innerText = isTa ? 'மின்னஞ்சல் முகவரி' : 'Email Address';
+      contactLabels[2].innerText = isTa ? 'கருத்து / கேள்வி' : 'Message';
+    }
+    const contactBtn = document.querySelector('#home-contact-form button[type="submit"]');
+    if (contactBtn) contactBtn.innerText = isTa ? 'செய்தி அனுப்பு' : 'Send Message';
+
+    // 8. Footer Columns
+    const footerHeaders = document.querySelectorAll('footer .footer-column h3');
+    if (footerHeaders.length === 4) {
+      footerHeaders[0].innerText = isTa ? 'செயல்பாடுகள்' : 'Core Modules';
+      footerHeaders[1].innerText = isTa ? 'விளக்கம் / உதவிகள்' : 'Presentation';
+      footerHeaders[2].innerText = isTa ? 'செய்தி மடல்' : 'Newsletter';
+    }
+
+    // Refresh Lucide Icons to bind translated icons correctly
+    lucide.createIcons();
+  }
+
+  // ========================================================
+  // REVIEWS & RATINGS SYSTEM
+  // ========================================================
+  async renderReviewsForProduct(productId) {
+    const reviewsSection = document.getElementById('product-reviews-section');
+    if (!reviewsSection) return;
+
+    // Show section
+    reviewsSection.style.display = 'block';
+
+    const listContainer = document.getElementById('reviews-list-container');
+    const avgValEl = document.getElementById('avg-rating-value');
+    const avgStarsEl = document.getElementById('avg-rating-stars');
+    const countEl = document.getElementById('reviews-count-text');
+
+    listContainer.innerHTML = '<p>Loading reviews...</p>';
+
+    try {
+      const reviews = await window.db.getProductReviews(productId);
+      
+      // Calculate statistics
+      const count = reviews.length;
+      let average = 0.0;
+      
+      if (count > 0) {
+        const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+        average = sum / count;
+      }
+
+      avgValEl.innerText = average.toFixed(1);
+      countEl.innerText = this.currentLang === 'en' 
+        ? `Based on ${count} review${count !== 1 ? 's' : ''}` 
+        : `${count} கருத்துக்களின் அடிப்படையில்`;
+
+      // Render average stars
+      let avgStarsHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        if (i <= Math.round(average)) {
+          avgStarsHtml += '<i data-lucide="star" style="fill:#FFC107; color:#FFC107; width:18px; height:18px;"></i>';
+        } else {
+          avgStarsHtml += '<i data-lucide="star" style="color:#E0E0E0; width:18px; height:18px;"></i>';
+        }
+      }
+      avgStarsEl.innerHTML = avgStarsHtml;
+
+      // Render reviews list
+      if (count === 0) {
+        listContainer.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">
+          <p>${this.currentLang === 'en' ? 'No reviews yet. Be the first to review!' : 'கருத்துக்கள் இன்னும் இல்லை. முதல் நபராக கருத்து தெரிவிக்கவும்!'}</p>
+        </div>`;
+        return;
+      }
+
+      // Sort by date desc
+      reviews.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+      listContainer.innerHTML = reviews.map(r => {
+        const dateStr = new Date(r.date).toLocaleDateString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric'
+        });
+
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+          if (i <= r.rating) {
+            starsHtml += '<i data-lucide="star" style="fill:#FFC107; color:#FFC107; width:12px; height:12px;"></i>';
+          } else {
+            starsHtml += '<i data-lucide="star" class="empty" style="color:#E0E0E0; width:12px; height:12px;"></i>';
+          }
+        }
+
+        return `
+          <div class="review-item-card">
+            <div class="review-item-meta">
+              <span class="review-item-author">${r.author_name}</span>
+              <span class="review-item-date">${dateStr}</span>
+            </div>
+            <div class="review-stars">${starsHtml}</div>
+            <p class="review-comment">${r.comment}</p>
+          </div>
+        `;
+      }).join('');
+
+      // Reset review form inputs
+      this.setRatingValue(5);
+      document.getElementById('product-review-form').reset();
+      
+      lucide.createIcons();
+    } catch (e) {
+      console.error(e);
+      listContainer.innerHTML = '<p>Error loading product reviews.</p>';
+    }
+  }
+
+  setRatingValue(val) {
+    this.selectedRating = val;
+    document.getElementById('review-rating-val').value = val;
+
+    // Toggle active stars in UI
+    const stars = document.querySelectorAll('#rating-star-selector i');
+    stars.forEach((star, idx) => {
+      if (idx < val) {
+        star.classList.add('selected');
+        star.style.fill = '#FFC107';
+        star.style.color = '#FFC107';
+      } else {
+        star.classList.remove('selected');
+        star.style.fill = 'none';
+        star.style.color = '#E0E0E0';
+      }
+    });
+  }
+
+  async handleReviewSubmit() {
+    if (!this.currentUser) {
+      this.showToast(this.currentLang === 'en' ? 'Please log in to submit a review.' : 'மதிப்பீட்டை சமர்ப்பிக்க தயவுசெய்து உள்நுழையவும்.', 'error');
+      this.navigateTo('/register');
+      return;
+    }
+
+    const rating = this.selectedRating;
+    const comment = document.getElementById('review-comment-text').value;
+    const authorName = this.currentUser.name;
+
+    try {
+      await window.db.submitProductReview(this.activeProductDetailsId, {
+        author_name: authorName,
+        rating,
+        comment
+      });
+
+      this.showToast(this.currentLang === 'en' ? 'Thank you! Review submitted.' : 'நன்றி! உங்களது கருத்து சமர்ப்பிக்கப்பட்டது.', 'success');
+      this.renderReviewsForProduct(this.activeProductDetailsId);
+    } catch (e) {
+      console.error(e);
+      this.showToast('Failed to submit review.', 'error');
+    }
+  }
+
+  // ========================================================
+  // CUSTOMER DASHBOARD - ORDER TRACKING TIMELINE
+  // ========================================================
+  async showOrderDetails(orderId) {
+    this.activeOrderDetailsId = orderId;
+    const detailsContainer = document.getElementById('consumer-order-details-container');
+    
+    // Clear and Show
+    detailsContainer.innerHTML = '<p>Loading order shipment tracking details...</p>';
+    detailsContainer.style.display = 'block';
+
+    try {
+      const orders = await window.db.getOrders();
+      const o = orders.find(ord => ord.id === orderId);
+
+      if (!o) {
+        detailsContainer.innerHTML = '<p class="error">Order not found.</p>';
+        return;
+      }
+
+      const products = await window.db.getProducts();
+      const p = products.find(prod => prod.id === o.product_id);
+
+      const status = o.order_status; // Pending, Shipped, Delivered
+      const isTa = this.currentLang === 'ta';
+
+      // Define visual progress percentage & nodes active
+      let progressWidth = '0%';
+      let step1 = 'active', step2 = '', step3 = '', step4 = '';
+
+      if (status === 'Pending') {
+        progressWidth = '0%';
+        step1 = 'active';
+      } else if (status === 'Shipped') {
+        progressWidth = '66%';
+        step1 = 'completed';
+        step2 = 'completed';
+        step3 = 'active';
+      } else if (status === 'Delivered') {
+        progressWidth = '100%';
+        step1 = 'completed';
+        step2 = 'completed';
+        step3 = 'completed';
+        step4 = 'active';
+      }
+
+      // Format date
+      const orderDateStr = new Date(o.order_date).toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      // Calculate fake estimated delivery date (Order Date + 3 days)
+      const estDate = new Date(o.order_date);
+      estDate.setDate(estDate.getDate() + 3);
+      const estDateStr = estDate.toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric'
+      });
+
+      detailsContainer.innerHTML = `
+        <div class="order-details-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; border-bottom:1px solid var(--border-color); padding-bottom:12px; margin-bottom:16px;">
+            <div>
+              <h4 style="font-size:16px; font-weight:700; color:var(--primary-dark);">
+                ${isTa ? 'ஆர்டர் விவரங்கள்' : 'Order Tracking Details'}
+              </h4>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+                ID: <span style="font-family:monospace; font-weight:600;">${o.id}</span>
+              </p>
+            </div>
+            <div style="display:flex; gap:12px;">
+              <button class="btn btn-outline" style="padding:6px 14px; font-size:12px;" onclick="app.showInvoiceModal('${o.id}')">
+                <i data-lucide="file-text" style="width:14px; height:14px; display:inline-block; vertical-align:middle; margin-right:4px;"></i>
+                ${isTa ? 'விலைப்பட்டியல் (Invoice)' : 'View Invoice'}
+              </button>
+              <button class="btn btn-outline" style="padding:6px 14px; font-size:12px; color:#C62828;" onclick="document.getElementById('consumer-order-details-container').style.display='none'">
+                ${isTa ? 'மூடு' : 'Close Details'}
+              </button>
+            </div>
+          </div>
+
+          <!-- Shipment Progress Timeline -->
+          <div class="timeline-container">
+            <div class="tracking-steps">
+              <div class="tracking-progress-line" style="width: ${progressWidth}"></div>
+              
+              <div class="tracking-step ${step1}">
+                <div class="step-node"><i data-lucide="shopping-bag"></i></div>
+                <div class="step-label">${isTa ? 'ஆர்டர் செய்யப்பட்டது' : 'Order Placed'}</div>
+              </div>
+              <div class="tracking-step ${step2 || (status !== 'Pending' ? 'completed' : '')}">
+                <div class="step-node"><i data-lucide="package"></i></div>
+                <div class="step-label">${isTa ? 'அறுவடை தயார்' : 'Harvest Packed'}</div>
+              </div>
+              <div class="tracking-step ${step3}">
+                <div class="step-node"><i data-lucide="truck"></i></div>
+                <div class="step-label">${isTa ? 'வழியில் உள்ளது' : 'In Transit'}</div>
+              </div>
+              <div class="tracking-step ${step4}">
+                <div class="step-node"><i data-lucide="check-circle"></i></div>
+                <div class="step-label">${isTa ? 'டெலிவரி செய்யப்பட்டது' : 'Delivered'}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detailed Info Grid -->
+          <div class="order-details-grid">
+            <div style="border-right:1px solid var(--border-color); padding-right:16px;">
+              <p style="margin-bottom:6px;"><strong>${isTa ? 'பயிர் விவரம்:' : 'Crop Details:'}</strong> ${o.product_name}</p>
+              <p style="margin-bottom:6px;"><strong>${isTa ? 'வாங்கிய அளவு:' : 'Quantity Purchased:'}</strong> ${o.quantity} kg</p>
+              <p style="margin-bottom:6px;"><strong>${isTa ? 'செலுத்திய தொகை:' : 'Total Amount Paid:'}</strong> ₹${parseFloat(o.total_price).toFixed(2)}</p>
+              <p style="margin-bottom:6px;"><strong>${isTa ? 'ஆர்டர் தேதி:' : 'Order Date:'}</strong> ${orderDateStr}</p>
+              <p style="margin-bottom:6px; color:var(--primary-dark)">
+                <strong>${isTa ? 'டெலிவரி தேதி (தோராயமாக):' : 'Est. Delivery Date:'}</strong> ${status === 'Delivered' ? (isTa ? 'டெலிவரி செய்யப்பட்டது' : 'Delivered successfully') : estDateStr}
+              </p>
+            </div>
+            
+            <div style="padding-left:16px;">
+              <p style="margin-bottom:6px;"><strong>${isTa ? 'விவசாயி பெயர்:' : 'Farmer Details:'}</strong> ${o.farmer_name || 'Local Farmer'}</p>
+              <p style="margin-bottom:6px;"><strong>${isTa ? 'விவசாய நிலம்:' : 'Farm Location:'}</strong> ${p ? p.location : 'Tamil Nadu, India'}</p>
+              <p style="margin-bottom:6px;"><strong>${isTa ? 'வாங்குபவர் முகவரி:' : 'Delivery Address:'}</strong> ${o.customer_address}</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Scroll smoothly to order details container
+      detailsContainer.scrollIntoView({ behavior: 'smooth' });
+      lucide.createIcons();
+    } catch (e) {
+      console.error(e);
+      detailsContainer.innerHTML = '<p class="error">Error loading details.</p>';
+    }
+  }
+
+  // ========================================================
+  // INVOICE PRINT MODAL LOGIC
+  // ========================================================
+  async showInvoiceModal(orderId) {
+    const modal = document.getElementById('invoice-modal');
+    const invoicePrintArea = document.getElementById('invoice-print-area');
+    
+    invoicePrintArea.innerHTML = '<p>Loading invoice details...</p>';
+    modal.style.display = 'flex';
+
+    try {
+      const orders = await window.db.getOrders();
+      const o = orders.find(ord => ord.id === orderId);
+
+      if (!o) {
+        invoicePrintArea.innerHTML = '<p class="error">Order not found.</p>';
+        return;
+      }
+
+      const products = await window.db.getProducts();
+      const p = products.find(prod => prod.id === o.product_id);
+
+      const isTa = this.currentLang === 'ta';
+      const orderDateStr = new Date(o.order_date).toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      // Math breakdowns
+      const grandTotal = parseFloat(o.total_price);
+      const deliveryCharge = grandTotal >= 500 ? 0 : 50;
+      const subtotal = grandTotal - deliveryCharge;
+      const basePrice = subtotal / 1.05; // Assuming 5% total tax (2.5% CGST + 2.5% SGST)
+      const totalTax = subtotal - basePrice;
+      const cgst = totalTax / 2;
+      const sgst = totalTax / 2;
+
+      invoicePrintArea.innerHTML = `
+        <div class="invoice-paper">
+          <div class="invoice-header-row">
+            <div>
+              <h2 style="color:var(--primary-green); font-family:var(--font-heading); font-size:24px; font-weight:800; display:flex; align-items:center; gap:8px;">
+                🌱 FarmConnect
+              </h2>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">Fresh from Farm, Direct to Home</p>
+            </div>
+            <div style="text-align:right;">
+              <h3 style="font-family:var(--font-heading); font-size:18px; text-transform:uppercase; color:var(--text-dark)">
+                ${isTa ? 'வரி விலைப்பட்டியல்' : 'Tax Invoice'}
+              </h3>
+              <p style="font-size:11px; margin-top:4px;">
+                <strong>Invoice No:</strong> FC-${o.id.substring(0, 8).toUpperCase()}
+              </p>
+              <p style="font-size:11px;">
+                <strong>Date:</strong> ${orderDateStr}
+              </p>
+            </div>
+          </div>
+
+          <div class="invoice-bill-to">
+            <div>
+              <h4 style="border-bottom:1px solid var(--border-color); padding-bottom:4px; margin-bottom:6px; color:var(--primary-dark)">
+                ${isTa ? 'விளக்கம் / வாங்குபவர்:' : 'Bill To (Customer):'}
+              </h4>
+              <p><strong>${o.customer_name}</strong></p>
+              <p>${o.customer_contact}</p>
+              <p style="white-space:normal; width:220px;">${o.customer_address}</p>
+            </div>
+            
+            <div style="text-align:right;">
+              <h4 style="border-bottom:1px solid var(--border-color); padding-bottom:4px; margin-bottom:6px; color:var(--primary-dark)">
+                ${isTa ? 'விவரம் / விவசாயி:' : 'Seller (Farmer):'}
+              </h4>
+              <p><strong>${o.farmer_name || 'Local Farmer'}</strong></p>
+              <p>Village: ${p ? p.location : 'Local Village'}</p>
+              <p>FarmConnect Organic Partner</p>
+            </div>
+          </div>
+
+          <table class="invoice-table">
+            <thead>
+              <tr>
+                <th>${isTa ? 'பொருள் பெயர்' : 'Item Description'}</th>
+                <th style="text-align:right;">${isTa ? 'விலை/கிலோ' : 'Rate / kg'}</th>
+                <th style="text-align:right;">${isTa ? 'அளவு (கிலோ)' : 'Qty (kg)'}</th>
+                <th style="text-align:right;">${isTa ? 'மொத்த தொகை' : 'Subtotal'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>${o.product_name}</strong><br><small style="color:var(--text-muted)">Category: ${p ? p.category : 'Fresh Produce'}</small></td>
+                <td style="text-align:right;">₹${(subtotal/o.quantity).toFixed(2)}</td>
+                <td style="text-align:right;">${o.quantity} kg</td>
+                <td style="text-align:right;">₹${subtotal.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="invoice-totals">
+            <div class="invoice-totals-row">
+              <span>${isTa ? 'விளைபொருள் மதிப்பு' : 'Crop Subtotal'}:</span>
+              <span>₹${basePrice.toFixed(2)}</span>
+            </div>
+            <div class="invoice-totals-row" style="color:var(--text-muted); font-size:11px;">
+              <span>CGST (2.5%):</span>
+              <span>₹${cgst.toFixed(2)}</span>
+            </div>
+            <div class="invoice-totals-row" style="color:var(--text-muted); font-size:11px;">
+              <span>SGST (2.5%):</span>
+              <span>₹${sgst.toFixed(2)}</span>
+            </div>
+            <div class="invoice-totals-row">
+              <span>${isTa ? 'விநியோக கட்டணம்' : 'Delivery Charge'}:</span>
+              <span>${deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge.toFixed(2)}`}</span>
+            </div>
+            <div class="invoice-totals-row" style="border-top:1px solid var(--border-color); padding-top:6px; font-weight:800; font-size:15px; color:var(--primary-green)">
+              <span>${isTa ? 'மொத்த தொகை (இந்திய ரூபாய்)' : 'Grand Total'}:</span>
+              <span>₹${grandTotal.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div style="margin-top:30px; border-top:1px dashed var(--border-color); padding-top:12px; text-align:center; font-size:11px; color:var(--text-muted)">
+            <p>${isTa ? 'பண்ணையிலிருந்து நேரடியாக வாங்கியதற்கு நன்றி!' : 'Thank you for buying direct and supporting local farmers!'}</p>
+            <p style="margin-top:4px; font-weight:600;">FarmConnect College Presentation Module - No real payments collected</p>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    } catch (e) {
+      console.error(e);
+      invoicePrintArea.innerHTML = '<p class="error">Error loading invoice.</p>';
+    }
+  }
+
+  closeInvoiceModal() {
+    document.getElementById('invoice-modal').style.display = 'none';
+  }
 }
+
+// BILINGUAL LANGUAGE DICTIONARY DECLARATION
+const TRANSLATIONS = {
+  en: {
+    "nav-home": "Home",
+    "nav-shop": "Shop",
+    "nav-register": "Register / Login",
+    "nav-farmer-db": "Farmer Portal",
+    "nav-consumer-db": "My Orders",
+    "nav-admin-db": "Admin",
+    "txt-reviews-title": "Customer Reviews",
+    "txt-reviews-subtitle": "What other buyers say about this harvest",
+    "txt-write-review-title": "Write a Review",
+    "lbl-rating": "Your Rating",
+    "lbl-review-comment": "Review Comments",
+    "btn-submit-review": "Submit Review",
+    "txt-invoice-header-title": "Order Invoice",
+    "btn-print-invoice-action": "Print Invoice",
+    "btn-close-invoice": "Close"
+  },
+  ta: {
+    "nav-home": "முகப்பு",
+    "nav-shop": "விவசாய சந்தை",
+    "nav-register": "பதிவு / உள்நுழைவு",
+    "nav-farmer-db": "விவசாயி தளம்",
+    "nav-consumer-db": "எனது ஆர்டர்கள்",
+    "nav-admin-db": "நிர்வாகி",
+    "txt-reviews-title": "வாடிக்கையாளர் கருத்துக்கள்",
+    "txt-reviews-subtitle": "இந்த விளைச்சல் பற்றி நுகர்வோர்கள் கூறுவது",
+    "txt-write-review-title": "மதிப்பீட்டை எழுதவும்",
+    "lbl-rating": "உங்கள் மதிப்பீடு",
+    "lbl-review-comment": "கருத்துகள்",
+    "btn-submit-review": "கருத்தை சமர்ப்பிக்கவும்",
+    "txt-invoice-header-title": "வரி விலைப்பட்டியல் (Invoice)",
+    "btn-print-invoice-action": "பில் பிரிண்ட் செய்க",
+    "btn-close-invoice": "மூடு"
+  }
+};
+
 
 // Instantiate and expose the app controller globally
 const app = new FarmConnectApp();

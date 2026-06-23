@@ -45,6 +45,12 @@
       </nav>
 
       <div class="header-actions">
+        <!-- Language Selector Toggle -->
+        <button id="lang-toggle-btn" class="lang-selector" onclick="app.toggleLanguage()">
+          <i data-lucide="languages" style="width:16px; height:16px;"></i>
+          <span id="lang-btn-text">தமிழ்</span>
+        </button>
+
         <!-- Cart Trigger Icon -->
         <div class="cart-badge-container" onclick="app.navigateTo('/cart')" title="View Cart">
           <i data-lucide="shopping-cart"></i>
@@ -332,6 +338,54 @@
         
         <div class="details-grid" id="product-details-content">
           <!-- Dynamically loaded with product detailed data -->
+        </div>
+
+        <!-- Reviews and Ratings Section -->
+        <div class="reviews-section" id="product-reviews-section" style="display:none;">
+          <div class="reviews-header-block">
+            <div>
+              <h3 id="txt-reviews-title" style="font-size:24px; margin-bottom:8px;">Customer Reviews</h3>
+              <p id="txt-reviews-subtitle" style="font-size:14px; color:var(--text-muted);">What other buyers say about this harvest</p>
+            </div>
+            
+            <div class="rating-summary-box">
+              <span class="avg-rating-num" id="avg-rating-value">0.0</span>
+              <div class="avg-stars-container">
+                <div class="review-stars" id="avg-rating-stars"></div>
+                <span id="reviews-count-text" style="font-size:12px; font-weight:600; color:var(--text-muted);">Based on 0 reviews</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="reviews-grid">
+            <!-- Left: Reviews list -->
+            <div class="reviews-list" id="reviews-list-container">
+              <!-- JS populated -->
+            </div>
+
+            <!-- Right: Submit form -->
+            <div class="write-review-card" id="write-review-box">
+              <h4 id="txt-write-review-title" style="margin-bottom:16px;">Write a Review</h4>
+              <form id="product-review-form" onsubmit="event.preventDefault(); app.handleReviewSubmit();">
+                <div class="form-group">
+                  <label id="lbl-rating" style="font-weight:600; font-size:14px; margin-bottom:8px; display:block;">Your Rating</label>
+                  <div class="rating-select-container" id="rating-star-selector">
+                    <i data-lucide="star" class="star-option selected" data-value="1" onclick="app.setRatingValue(1)"></i>
+                    <i data-lucide="star" class="star-option selected" data-value="2" onclick="app.setRatingValue(2)"></i>
+                    <i data-lucide="star" class="star-option selected" data-value="3" onclick="app.setRatingValue(3)"></i>
+                    <i data-lucide="star" class="star-option selected" data-value="4" onclick="app.setRatingValue(4)"></i>
+                    <i data-lucide="star" class="star-option selected" data-value="5" onclick="app.setRatingValue(5)"></i>
+                  </div>
+                  <input type="hidden" id="review-rating-val" value="5">
+                </div>
+                <div class="form-group">
+                  <label id="lbl-review-comment" for="review-comment-text" style="font-weight:600; font-size:14px;">Comments</label>
+                  <textarea id="review-comment-text" class="form-control" placeholder="Share your experience (freshness, taste, quality)..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="btn-submit-review" style="width:100%;">Submit Review</button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -671,7 +725,11 @@
                     <!-- Loaded via JS -->
                   </tbody>
                 </table>
-              </div>
+            </div>
+            
+            <!-- Detailed Order View (with tracking timeline and invoice) -->
+            <div id="consumer-order-details-container" style="display:none;">
+              <!-- Dynamically rendered order details, shipment tracking, and invoice link -->
             </div>
           </div>
         </div>
@@ -938,7 +996,26 @@
         </div>
       </div>
     </div>
-  </footer>
+  <!-- ================= INVOICE PRINT MODAL ================= -->
+  <div id="invoice-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="txt-invoice-header-title">Order Invoice</h3>
+        <button class="btn-remove-cart" onclick="app.closeInvoiceModal()" style="font-size: 24px; font-weight:700;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="invoice-paper" id="invoice-print-area">
+          <!-- Dynamically populated invoice details -->
+        </div>
+      </div>
+      <div class="modal-footer-actions">
+        <button class="btn btn-primary" onclick="window.print()" id="btn-print-invoice-action">
+          <i data-lucide="printer" style="width:16px; height:16px; display:inline-block; vertical-align:middle; margin-right:4px;"></i> Print Invoice
+        </button>
+        <button class="btn btn-outline" onclick="app.closeInvoiceModal()" id="btn-close-invoice">Close</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Application Logic JS -->
   <script src="db.js"></script>

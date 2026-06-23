@@ -163,6 +163,41 @@ const DEFAULT_ORDERS = [
   }
 ];
 
+const DEFAULT_REVIEWS = [
+  {
+    id: "rev_1",
+    product_id: "prod_grapes",
+    author_name: "Arjun Mehta",
+    rating: 5,
+    comment: "The grapes were extremely sweet and fresh! My children loved them. Directly from Nashik farm, highly recommended.",
+    date: "2026-06-18T10:00:00.000Z"
+  },
+  {
+    id: "rev_2",
+    product_id: "prod_grapes",
+    author_name: "Priya Sharma",
+    rating: 4,
+    comment: "ரொம்ப அருமையான திராட்சை பழங்கள். (Very nice grapes. Juicy and fresh!)",
+    date: "2026-06-19T14:30:00.000Z"
+  },
+  {
+    id: "rev_3",
+    product_id: "prod_rice",
+    author_name: "Arjun Mehta",
+    rating: 5,
+    comment: "Traditional Basmati fragrance is amazing! It cooks so fluffy. Will buy again.",
+    date: "2026-06-21T09:15:00.000Z"
+  },
+  {
+    id: "rev_4",
+    product_id: "prod_apples",
+    author_name: "Priya Sharma",
+    rating: 5,
+    comment: "Shimla apples are super crisp. Packaging was good. Direct support to farmer feels great.",
+    date: "2026-06-22T11:00:00.000Z"
+  }
+];
+
 // Helper to check if Supabase credentials exist
 function getSupabaseConfig() {
   const url = localStorage.getItem("FC_SUPABASE_URL") || window.VITE_SUPABASE_URL || "";
@@ -183,6 +218,9 @@ function initMockDb() {
   }
   if (!localStorage.getItem("fc_orders")) {
     localStorage.setItem("fc_orders", JSON.stringify(DEFAULT_ORDERS));
+  }
+  if (!localStorage.getItem("fc_reviews")) {
+    localStorage.setItem("fc_reviews", JSON.stringify(DEFAULT_REVIEWS));
   }
 }
 
@@ -343,6 +381,28 @@ const MockDbService = {
       totalProducts: products.length,
       totalOrders: orders.length
     };
+  },
+
+  async getProductReviews(productId) {
+    initMockDb();
+    const reviews = JSON.parse(localStorage.getItem("fc_reviews")) || [];
+    return reviews.filter(r => r.product_id === productId);
+  },
+
+  async submitProductReview(productId, reviewData) {
+    initMockDb();
+    const reviews = JSON.parse(localStorage.getItem("fc_reviews")) || [];
+    const newReview = {
+      id: "rev_" + Math.random().toString(36).substr(2, 9),
+      product_id: productId,
+      author_name: reviewData.author_name,
+      rating: parseInt(reviewData.rating),
+      comment: reviewData.comment,
+      date: new Date().toISOString()
+    };
+    reviews.unshift(newReview);
+    localStorage.setItem("fc_reviews", JSON.stringify(reviews));
+    return newReview;
   }
 };
 
@@ -545,6 +605,49 @@ const SupabaseDbService = {
       totalProducts: countProducts || 0,
       totalOrders: countOrders || 0
     };
+  },
+
+  async getProductReviews(productId) {
+    const client = getSupabaseClient();
+    try {
+      const { data, error } = await client.from("reviews").select("*").eq("product_id", productId);
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.warn("Supabase reviews table not found, falling back to local storage reviews.", e);
+      initMockDb();
+      const reviews = JSON.parse(localStorage.getItem("fc_reviews")) || [];
+      return reviews.filter(r => r.product_id === productId);
+    }
+  },
+
+  async submitProductReview(productId, reviewData) {
+    const client = getSupabaseClient();
+    try {
+      const { data, error } = await client.from("reviews").insert([{
+        product_id: productId,
+        author_name: reviewData.author_name,
+        rating: parseInt(reviewData.rating),
+        comment: reviewData.comment
+      }]).select().single();
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.warn("Supabase reviews insert failed, falling back to local storage.", e);
+      initMockDb();
+      const reviews = JSON.parse(localStorage.getItem("fc_reviews")) || [];
+      const newReview = {
+        id: "rev_" + Math.random().toString(36).substr(2, 9),
+        product_id: productId,
+        author_name: reviewData.author_name,
+        rating: parseInt(reviewData.rating),
+        comment: reviewData.comment,
+        date: new Date().toISOString()
+      };
+      reviews.unshift(newReview);
+      localStorage.setItem("fc_reviews", JSON.stringify(reviews));
+      return newReview;
+    }
   }
 };
 
@@ -578,7 +681,9 @@ const db = {
   async registerConsumer(consumerData) { return this.getService().registerConsumer(consumerData); },
   async addProduct(productData) { return this.getService().addProduct(productData); },
   async deleteProduct(productId) { return this.getService().deleteProduct(productId); },
-  async getStats() { return this.getService().getStats(); }
+  async getStats() { return this.getService().getStats(); },
+  async getProductReviews(productId) { return this.getService().getProductReviews(productId); },
+  async submitProductReview(productId, reviewData) { return this.getService().submitProductReview(productId, reviewData); }
 };
 
 // Make it globally accessible
