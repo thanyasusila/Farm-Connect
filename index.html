@@ -48,6 +48,12 @@
       </nav>
 
       <div class="header-actions">
+        <!-- AI Price Calculator Trigger -->
+        <button id="price-calc-btn" class="lang-selector" onclick="app.openPriceEstimator()" title="AI Fair-Price Calculator">
+          <i data-lucide="calculator" style="width:16px; height:16px; color:var(--primary-green);"></i>
+          <span id="txt-calc-btn">AI Price Calculator</span>
+        </button>
+
         <!-- Language Selector Toggle -->
         <button id="lang-toggle-btn" class="lang-selector" onclick="app.toggleLanguage()">
           <i data-lucide="languages" style="width:16px; height:16px;"></i>
@@ -1108,6 +1114,148 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= DIGITAL FARM PASSPORT MODAL ================= -->
+  <div id="passport-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-container passport-modal-container">
+      <div class="modal-header passport-modal-header">
+        <h3 id="txt-passport-modal-title"><i data-lucide="award" style="color:var(--primary-green); vertical-align:middle; margin-right:6px;"></i>Digital Farm Passport</h3>
+        <button class="btn-remove-cart" onclick="app.closePassportModal()" style="font-size: 24px; font-weight:700;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="passport-certificate" id="passport-cert-area">
+          <div class="passport-watermark">VERIFIED</div>
+          
+          <div class="passport-top-row">
+            <div class="passport-brand">
+              <span class="passport-badge-ribbon">🌱 100% Direct Organic</span>
+              <h2 id="passport-crop-name">Alphonso Mango</h2>
+              <p class="passport-farmer-sub" id="passport-farmer-info">Grown by Selvam | Madurai Organic Farms</p>
+            </div>
+            <div class="passport-qr-box">
+              <img id="passport-qr-img" src="" alt="QR Traceability Code">
+              <span style="font-size:10px; color:var(--text-muted); display:block; text-align:center; margin-top:2px;">Scan to Verify</span>
+            </div>
+          </div>
+
+          <div class="passport-details-grid">
+            <div class="passport-detail-card">
+              <div class="passport-detail-icon"><i data-lucide="map-pin"></i></div>
+              <div>
+                <span class="passport-detail-label" id="txt-lbl-gps">GPS Farm Origin</span>
+                <p class="passport-detail-value" id="passport-gps">9.9252° N, 78.1198° E</p>
+              </div>
+            </div>
+
+            <div class="passport-detail-card">
+              <div class="passport-detail-icon"><i data-lucide="sprout"></i></div>
+              <div>
+                <span class="passport-detail-label" id="txt-lbl-soil">Soil Health Rating</span>
+                <p class="passport-detail-value" id="passport-soil">9.8 / 10 (pH 6.8 - Vermicompost)</p>
+              </div>
+            </div>
+
+            <div class="passport-detail-card">
+              <div class="passport-detail-icon"><i data-lucide="qr-code"></i></div>
+              <div>
+                <span class="passport-detail-label" id="txt-lbl-batch">Harvest Batch ID</span>
+                <p class="passport-detail-value" id="passport-batch">BATCH-2026-MDU-01</p>
+              </div>
+            </div>
+
+            <div class="passport-detail-card">
+              <div class="passport-detail-icon"><i data-lucide="leaf"></i></div>
+              <div>
+                <span class="passport-detail-label" id="txt-lbl-co2">Eco Carbon Saved</span>
+                <p class="passport-detail-value" id="passport-co2">4.5 kg CO2 offset</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="passport-cert-footer">
+            <div style="font-size:11px; color:var(--text-muted);">
+              <strong>Organic Cert ID:</strong> <span id="passport-cert-id">TN-ORG-2026-8891</span>
+            </div>
+            <div class="passport-stamp">
+              ✓ Verified C2C Direct Traceability
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer-actions">
+        <button class="btn btn-primary" onclick="app.closePassportModal()" id="btn-close-passport">Close Passport</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= AI PRICE ESTIMATOR MODAL ================= -->
+  <div id="price-estimator-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-container price-calc-modal">
+      <div class="modal-header">
+        <h3><i data-lucide="calculator" style="color:var(--primary-green); vertical-align:middle; margin-right:6px;"></i><span id="txt-estimator-title">AI Fair-Price & Profit Estimator</span></h3>
+        <button class="btn-remove-cart" onclick="app.closePriceEstimator()" style="font-size: 24px; font-weight:700;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="txt-estimator-desc" style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+          Calculate how much extra revenue farmers earn and how much consumers save by bypassing mandi middlemen.
+        </p>
+
+        <div class="calc-inputs-grid">
+          <div class="form-group">
+            <label id="lbl-calc-crop" for="calc-crop-select">Select Crop / Produce</label>
+            <select id="calc-crop-select" class="form-control" onchange="app.calculatePriceEstimate()">
+              <option value="alphonso">Alphonso Mango (Devgad/Madurai)</option>
+              <option value="neelum">Neelum Mango</option>
+              <option value="grapes">Organic Nashik Grapes</option>
+              <option value="rice">Premium Basmati Rice</option>
+              <option value="apples">Sweet Shimla Apples</option>
+              <option value="tomatoes">Fresh Vine Tomatoes</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label id="lbl-calc-qty" for="calc-qty-input">Harvest Quantity (kg)</label>
+            <input type="number" id="calc-qty-input" class="form-control" value="100" min="10" step="10" oninput="app.calculatePriceEstimate()">
+          </div>
+        </div>
+
+        <!-- Calculated Results Area -->
+        <div class="calc-results-card">
+          <div class="calc-metrics-row">
+            <div class="calc-metric-box mandi">
+              <span class="metric-label" id="txt-lbl-mandi">Mandi Middleman Rate</span>
+              <div class="metric-val" id="calc-mandi-rate">₹90.00 / kg</div>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:2px;" id="txt-sub-mandi">Trader payout to farmer</p>
+            </div>
+
+            <div class="calc-metric-box direct">
+              <span class="metric-label" id="txt-lbl-direct">FarmConnect Direct Price</span>
+              <div class="metric-val" id="calc-direct-rate">₹250.00 / kg</div>
+              <p style="font-size:11px; color:var(--primary-dark); margin-top:2px;" id="txt-sub-direct">100% kept by farmer</p>
+            </div>
+          </div>
+
+          <!-- Profit Gains Chart -->
+          <div class="profit-gain-banner">
+            <div>
+              <span style="font-size:12px; text-transform:uppercase; font-weight:600; opacity:0.9;" id="txt-lbl-gain">Farmer Net Income Increase</span>
+              <h2 id="calc-profit-multiplier">+177% Extra Earnings</h2>
+            </div>
+            <div class="gain-badge" id="calc-total-gain">+₹16,000 Total Gain</div>
+          </div>
+
+          <!-- Consumer Savings Row -->
+          <div class="consumer-savings-bar">
+            <i data-lucide="sparkles" style="width:16px; height:16px; color:var(--primary-green);"></i>
+            <span id="calc-consumer-saved">Consumer saves 15% compared to supermarket retail prices.</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer-actions">
+        <button class="btn btn-primary" onclick="app.closePriceEstimator()" id="btn-close-calc">Close Calculator</button>
       </div>
     </div>
   </div>

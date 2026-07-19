@@ -71,7 +71,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_rajesh",
     description: "Freshly harvested, sweet, black seedless organic grapes, grown with natural compost.",
     harvest_date: "2026-06-20",
-    image_url: "https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "19.9975° N, 73.7898° E (Nashik, MH)",
+    soil_health: "9.5 / 10 (pH 6.5 - Bio-humus enriched)",
+    batch_no: "BATCH-2026-NSK-102",
+    carbon_saved: "3.6 kg CO2 offset",
+    organic_cert: "MH-ORG-2026-7718"
   },
   {
     id: "prod_tomatoes",
@@ -82,7 +87,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_rajesh",
     description: "Bright red, juicy farm-fresh tomatoes, perfect for salads and curries.",
     harvest_date: "2026-06-21",
-    image_url: "https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "19.9975° N, 73.7898° E (Nashik, MH)",
+    soil_health: "9.2 / 10 (pH 6.8 - Natural Compost)",
+    batch_no: "BATCH-2026-NSK-109",
+    carbon_saved: "2.8 kg CO2 offset",
+    organic_cert: "MH-ORG-2026-7720"
   },
   {
     id: "prod_rice",
@@ -93,7 +103,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_sunita",
     description: "Traditional long-grain aromatic Basmati rice, aged for 12 months for ultimate fragrance and fluffiness.",
     harvest_date: "2026-06-05",
-    image_url: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "30.9010° N, 75.8573° E (Ludhiana, PB)",
+    soil_health: "9.7 / 10 (pH 7.1 - Alluvial Silt)",
+    batch_no: "BATCH-2026-PB-404",
+    carbon_saved: "5.4 kg CO2 offset",
+    organic_cert: "PB-ORG-2026-3391"
   },
   {
     id: "prod_wheat",
@@ -104,7 +119,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_sunita",
     description: "Premium quality Sharbati wheat grains, rich in nutrients, harvested from Punjab's golden fields.",
     harvest_date: "2026-06-01",
-    image_url: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "30.9010° N, 75.8573° E (Ludhiana, PB)",
+    soil_health: "9.6 / 10 (pH 7.0 - Loam Rich)",
+    batch_no: "BATCH-2026-PB-410",
+    carbon_saved: "6.2 kg CO2 offset",
+    organic_cert: "PB-ORG-2026-3395"
   },
   {
     id: "prod_apples",
@@ -115,7 +135,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_amit",
     description: "Crisp, juicy and highly flavorful red Royal Delicious apples direct from Shimla orchards.",
     harvest_date: "2026-06-18",
-    image_url: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "31.1048° N, 77.1734° E (Shimla, HP)",
+    soil_health: "9.8 / 10 (pH 6.2 - Mountain Soil)",
+    batch_no: "BATCH-2026-HP-808",
+    carbon_saved: "4.1 kg CO2 offset",
+    organic_cert: "HP-ORG-2026-1102"
   },
   {
     id: "prod_carrots",
@@ -126,7 +151,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_ramesh",
     description: "Sweet, crunchy, pesticide-free carrots, rich in Beta-Carotene.",
     harvest_date: "2026-06-19",
-    image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "17.6805° N, 74.0183° E (Satara, MH)",
+    soil_health: "9.4 / 10 (pH 6.7 - Black Fertile Soil)",
+    batch_no: "BATCH-2026-SAT-205",
+    carbon_saved: "3.2 kg CO2 offset",
+    organic_cert: "MH-ORG-2026-5541"
   },
   {
     id: "prod_potatoes",
@@ -137,7 +167,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_ramesh",
     description: "Freshly dug baby potatoes, thin skinned, excellent taste and texture.",
     harvest_date: "2026-06-17",
-    image_url: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "17.6805° N, 74.0183° E (Satara, MH)",
+    soil_health: "9.3 / 10 (pH 6.9 - Red Loam)",
+    batch_no: "BATCH-2026-SAT-211",
+    carbon_saved: "2.9 kg CO2 offset",
+    organic_cert: "MH-ORG-2026-5544"
   },
   {
     id: "prod_alphonso",
@@ -148,7 +183,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_selvam",
     description: "Premium Alphonso mangoes, known for their rich, sweet, and creamy flavor.",
     harvest_date: "2026-06-22",
-    image_url: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "9.9252° N, 78.1198° E (Madurai, TN)",
+    soil_health: "9.9 / 10 (pH 6.8 - Natural Vermicompost)",
+    batch_no: "BATCH-2026-MDU-01",
+    carbon_saved: "4.5 kg CO2 offset",
+    organic_cert: "TN-ORG-2026-8891"
   },
   {
     id: "prod_neelum",
@@ -159,7 +199,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_selvam",
     description: "Highly aromatic Neelum mangoes, sweet taste with a unique fiberless texture, direct from Madurai.",
     harvest_date: "2026-06-23",
-    image_url: "https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "9.9252° N, 78.1198° E (Madurai, TN)",
+    soil_health: "9.7 / 10 (pH 6.8 - Organic Humus)",
+    batch_no: "BATCH-2026-MDU-03",
+    carbon_saved: "4.2 kg CO2 offset",
+    organic_cert: "TN-ORG-2026-8893"
   },
   {
     id: "prod_banganapalli",
@@ -170,7 +215,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_selvam",
     description: "Large-sized sweet Banganapalli mangoes, direct from our Madurai farm.",
     harvest_date: "2026-06-21",
-    image_url: "https://images.unsplash.com/photo-1591073113125-e46713c829ed?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1591073113125-e46713c829ed?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "9.9252° N, 78.1198° E (Madurai, TN)",
+    soil_health: "9.8 / 10 (pH 6.9 - Bio-compost enriched)",
+    batch_no: "BATCH-2026-MDU-05",
+    carbon_saved: "4.6 kg CO2 offset",
+    organic_cert: "TN-ORG-2026-8895"
   },
   {
     id: "prod_turmeric",
@@ -181,7 +231,12 @@ const DEFAULT_PRODUCTS = [
     farmer_id: "farmer_selvam",
     description: "Pure, high-curcumin turmeric powder, processed organically in Madurai.",
     harvest_date: "2026-06-15",
-    image_url: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=600&q=80"
+    image_url: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=600&q=80",
+    gps_coordinates: "9.9252° N, 78.1198° E (Madurai, TN)",
+    soil_health: "9.9 / 10 (pH 6.7 - Curcumin Rich Soil)",
+    batch_no: "BATCH-2026-MDU-12",
+    carbon_saved: "3.8 kg CO2 offset",
+    organic_cert: "TN-ORG-2026-8899"
   }
 ];
 

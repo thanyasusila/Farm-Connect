@@ -2566,3 +2566,265 @@ footer {
   }
 }
 
+/* ================= DIGITAL FARM PASSPORT STYLES ================= */
+.passport-modal-container {
+  max-width: 580px !important;
+}
+
+.passport-certificate {
+  background: linear-gradient(135deg, #ffffff 0%, #f4fbf5 100%);
+  border: 2px solid var(--primary-green);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.08);
+}
+
+.passport-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-25deg);
+  font-size: 72px;
+  font-weight: 900;
+  color: rgba(46, 125, 50, 0.04);
+  pointer-events: none;
+  letter-spacing: 0.1em;
+  user-select: none;
+}
+
+.passport-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 1px dashed rgba(46, 125, 50, 0.2);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.passport-badge-ribbon {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  border: 1px solid rgba(46, 125, 50, 0.2);
+}
+
+.passport-brand h2 {
+  font-size: 22px;
+  color: var(--primary-dark);
+  margin-bottom: 2px;
+}
+
+.passport-farmer-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.passport-qr-box {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.passport-qr-box img {
+  width: 90px;
+  height: 90px;
+  display: block;
+}
+
+.passport-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.passport-detail-card {
+  background: #ffffff;
+  border: 1px solid rgba(46, 125, 50, 0.12);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.passport-detail-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.passport-detail-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  display: block;
+}
+
+.passport-detail-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: 1px;
+}
+
+.passport-cert-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+}
+
+.passport-stamp {
+  background: #E8F5E9;
+  color: #2E7D32;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid #C8E6C9;
+}
+
+/* Product Card Passport Badge Button */
+.btn-passport-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(46, 125, 50, 0.2);
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 6px;
+}
+
+.btn-passport-badge:hover {
+  background: var(--primary-green);
+  color: #ffffff;
+}
+
+/* ================= AI PRICE ESTIMATOR STYLES ================= */
+.price-calc-modal {
+  max-width: 520px !important;
+}
+
+.calc-inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.calc-results-card {
+  background: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.calc-metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.calc-metric-box {
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+}
+
+.calc-metric-box.mandi {
+  border-left: 4px solid #9E9E9E;
+}
+
+.calc-metric-box.direct {
+  border-left: 4px solid var(--primary-green);
+  background: var(--primary-light);
+}
+
+.metric-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+}
+
+.metric-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-top: 4px;
+}
+
+.calc-metric-box.direct .metric-val {
+  color: var(--primary-dark);
+}
+
+.profit-gain-banner {
+  background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+  color: #ffffff;
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+}
+
+.profit-gain-banner h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+.gain-badge {
+  background: #FFC107;
+  color: #212121;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.consumer-savings-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background: #ffffff;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(46, 125, 50, 0.15);
+}
+
+

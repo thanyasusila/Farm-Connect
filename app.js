@@ -485,6 +485,12 @@ class FarmConnectApp {
             <span class="product-stock ${stockClass}">${stockText}</span>
           </div>
           
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <button class="btn-passport-badge" onclick="event.stopPropagation(); app.openPassportModal('${p.id}')">
+              <i data-lucide="award" style="width:13px; height:13px;"></i> ${isTa ? 'பாஸ்போர்ட் சான்றிதழ்' : 'Trace Origin Passport'}
+            </button>
+          </div>
+
           <button class="btn-add-cart" onclick="app.addToCart('${p.id}', 1)" ${isOutOfStock ? 'disabled' : ''}>
             <i data-lucide="shopping-cart" style="width:16px; height:16px;"></i> ${isTa ? 'வண்டியில் சேர்' : 'Add to Cart'}
           </button>
@@ -2227,6 +2233,105 @@ class FarmConnectApp {
     // Re-create icons for the new card
     lucide.createIcons();
   }
+
+  // ========================================================
+  // DIGITAL FARM PASSPORT LOGIC
+  // ========================================================
+  async openPassportModal(productId) {
+    const modal = document.getElementById('passport-modal');
+    if (!modal) return;
+
+    try {
+      const rawP = await window.db.getProductById(productId);
+      if (!rawP) {
+        this.showToast("Product not found", "error");
+        return;
+      }
+
+      const p = this.getTranslatedProduct(rawP);
+      const isTa = this.currentLang === 'ta';
+
+      document.getElementById('passport-crop-name').innerText = p.product_name;
+      document.getElementById('passport-farmer-info').innerText = isTa 
+        ? `விவசாயி: ${p.farmer_name} | ${p.location}` 
+        : `Grown by ${p.farmer_name} | ${p.location}`;
+
+      // Passport metadata fallback generator
+      const gps = p.gps_coordinates || (p.location.includes("Madurai") ? "9.9252° N, 78.1198° E (Madurai, TN)" : "19.9975° N, 73.7898° E (Nashik, MH)");
+      const soil = p.soil_health || "9.8 / 10 (pH 6.8 - Natural Organic Composting)";
+      const batch = p.batch_no || `BATCH-2026-${productId.toUpperCase()}`;
+      const co2 = p.carbon_saved || "4.2 kg CO2 offset";
+      const cert = p.organic_cert || `TN-ORG-2026-8891`;
+
+      document.getElementById('passport-gps').innerText = gps;
+      document.getElementById('passport-soil').innerText = soil;
+      document.getElementById('passport-batch').innerText = batch;
+      document.getElementById('passport-co2').innerText = co2;
+      document.getElementById('passport-cert-id').innerText = cert;
+
+      // QR Code URL using QRServer API
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`https://farmconnect.com/passport/${productId}?batch=${batch}`)}`;
+      document.getElementById('passport-qr-img').src = qrUrl;
+
+      modal.style.display = 'flex';
+      lucide.createIcons();
+    } catch (e) {
+      console.error(e);
+      this.showToast("Failed to open Digital Passport", "error");
+    }
+  }
+
+  closePassportModal() {
+    const modal = document.getElementById('passport-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  // ========================================================
+  // AI PRICE ESTIMATOR LOGIC
+  // ========================================================
+  openPriceEstimator() {
+    const modal = document.getElementById('price-estimator-modal');
+    if (modal) {
+      modal.style.display = 'flex';
+      this.calculatePriceEstimate();
+    }
+  }
+
+  closePriceEstimator() {
+    const modal = document.getElementById('price-estimator-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  calculatePriceEstimate() {
+    const crop = document.getElementById('calc-crop-select').value;
+    const qty = parseFloat(document.getElementById('calc-qty-input').value) || 100;
+
+    const rates = {
+      alphonso: { mandi: 90, direct: 250 },
+      neelum: { mandi: 55, direct: 150 },
+      grapes: { mandi: 45, direct: 120 },
+      rice: { mandi: 45, direct: 110 },
+      apples: { mandi: 65, direct: 180 },
+      tomatoes: { mandi: 15, direct: 40 }
+    };
+
+    const item = rates[crop] || rates['alphonso'];
+    const mandiTotal = item.mandi * qty;
+    const directTotal = item.direct * qty;
+    const gainVal = directTotal - mandiTotal;
+    const multiplier = Math.round(((item.direct - item.mandi) / item.mandi) * 100);
+
+    const isTa = this.currentLang === 'ta';
+
+    document.getElementById('calc-mandi-rate').innerText = `₹${item.mandi.toFixed(2)} / kg`;
+    document.getElementById('calc-direct-rate').innerText = `₹${item.direct.toFixed(2)} / kg`;
+    document.getElementById('calc-profit-multiplier').innerText = `+${multiplier}% ${isTa ? 'கூடுதல் லாபம்' : 'Extra Earnings'}`;
+    document.getElementById('calc-total-gain').innerText = `+₹${gainVal.toLocaleString('en-IN')} ${isTa ? 'கூடுதல் வருமானம்' : 'Total Gain'}`;
+    
+    document.getElementById('calc-consumer-saved').innerText = isTa 
+      ? `நுகர்வோர் சூப்பர் மார்க்கெட் விலையை விட 15% சேமிக்கிறார்கள் (கட்டணம்: ₹${item.direct}/கிலோ).`
+      : `Consumer saves 15% compared to supermarket retail prices (Direct: ₹${item.direct}/kg).`;
+  }
 }
 
 // BILINGUAL LANGUAGE DICTIONARY DECLARATION
@@ -2254,7 +2359,24 @@ const TRANSLATIONS = {
     "btn-apply-filter": "Show Matching Products",
     "btn-scan-again": "Scan Another",
     "txt-demo-title": "Quick Demo: Click a crop to scan",
-    "txt-scanning-status": "Analyzing image..."
+    "txt-scanning-status": "Analyzing image...",
+    "txt-calc-btn": "AI Price Calculator",
+    "txt-passport-modal-title": "Digital Farm Passport",
+    "txt-lbl-gps": "GPS Farm Origin",
+    "txt-lbl-soil": "Soil Health Rating",
+    "txt-lbl-batch": "Harvest Batch ID",
+    "txt-lbl-co2": "Eco Carbon Saved",
+    "btn-close-passport": "Close Passport",
+    "txt-estimator-title": "AI Fair-Price & Profit Estimator",
+    "txt-estimator-desc": "Calculate how much extra revenue farmers earn and how much consumers save by bypassing mandi middlemen.",
+    "lbl-calc-crop": "Select Crop / Produce",
+    "lbl-calc-qty": "Harvest Quantity (kg)",
+    "txt-lbl-mandi": "Mandi Middleman Rate",
+    "txt-sub-mandi": "Trader payout to farmer",
+    "txt-lbl-direct": "FarmConnect Direct Price",
+    "txt-sub-direct": "100% kept by farmer",
+    "txt-lbl-gain": "Farmer Net Income Increase",
+    "btn-close-calc": "Close Calculator"
   },
   ta: {
     "nav-home": "முகப்பு",
@@ -2279,7 +2401,24 @@ const TRANSLATIONS = {
     "btn-apply-filter": "பொருந்தும் தயாரிப்புகளைக் காட்டு",
     "btn-scan-again": "மீண்டும் ஸ்கேன் செய்க",
     "txt-demo-title": "விரைவு டெமோ: ஸ்கேன் செய்ய ஒரு பயிரைக் கிளிக் செய்க",
-    "txt-scanning-status": "பகுப்பாய்வு செய்கிறது..."
+    "txt-scanning-status": "பகுப்பாய்வு செய்கிறது...",
+    "txt-calc-btn": "AI விலை கணிப்பான்",
+    "txt-passport-modal-title": "டிஜிட்டல் பண்ணை பாஸ்போர்ட்",
+    "txt-lbl-gps": "பண்ணை GPS இருப்பிடம்",
+    "txt-lbl-soil": "மண் வள மதிப்பீடு",
+    "txt-lbl-batch": "அறுவடை பேட்ச் எண்",
+    "txt-lbl-co2": "சுற்றுச்சூழல் கார்பன் சேமிப்பு",
+    "btn-close-passport": "பாஸ்போர்ட் மூடு",
+    "txt-estimator-title": "AI விலை மற்றும் லாப கணிப்பான்",
+    "txt-estimator-desc": "இடைத்தரகர்களை தவிர்ப்பதன் மூலம் விவசாயிகளின் கூடுதல் வருமானம் மற்றும் நுகர்வோர் சேமிப்பை கணக்கிடுங்கள்.",
+    "lbl-calc-crop": "பயிரை தேர்வு செய்க",
+    "lbl-calc-qty": "அறுவடை அளவு (கிலோ)",
+    "txt-lbl-mandi": "மண்டி இடைத்தரகர் விலை",
+    "txt-sub-mandi": "விவசாயிக்கு வர்த்தகர் தரும் தொகை",
+    "txt-lbl-direct": "பார்ம்கனெக்ட் நேரடி விலை",
+    "txt-sub-direct": "100% விவசாயிக்கான தொகை",
+    "txt-lbl-gain": "விவசாயி நிகர வருமான உயர்வு",
+    "btn-close-calc": "கணிப்பான் மூடு"
   }
 };
 
