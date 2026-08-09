@@ -307,9 +307,20 @@ const DEFAULT_REVIEWS = [
 
 // Helper to check if Supabase credentials exist
 function getSupabaseConfig() {
-  const url = localStorage.getItem("FC_SUPABASE_URL") || window.VITE_SUPABASE_URL || "";
-  const key = localStorage.getItem("FC_SUPABASE_ANON_KEY") || window.VITE_SUPABASE_ANON_KEY || "";
-  return url && key ? { url, key } : null;
+  const url = localStorage.getItem("FC_SUPABASE_URL") || 
+              localStorage.getItem("fc_supabase_url") || 
+              localStorage.getItem("supabase_url") || 
+              window.VITE_SUPABASE_URL || "";
+  const key = localStorage.getItem("FC_SUPABASE_ANON_KEY") || 
+              localStorage.getItem("fc_supabase_anon_key") || 
+              localStorage.getItem("supabase_key") || 
+              localStorage.getItem("supabase_anon_key") || 
+              window.VITE_SUPABASE_ANON_KEY || "";
+              
+  if (!url || !key || url === "undefined" || url === "null" || key === "undefined" || key === "null") {
+    return null;
+  }
+  return { url, key };
 }
 
 // Initializing Mock LocalStorage database if needed
@@ -389,7 +400,20 @@ const MockDbService = {
 
   async getOrders() {
     initMockDb();
-    return JSON.parse(localStorage.getItem("fc_orders"));
+    const orders = JSON.parse(localStorage.getItem("fc_orders")) || [];
+    const products = JSON.parse(localStorage.getItem("fc_products")) || [];
+    const farmers = JSON.parse(localStorage.getItem("fc_farmers")) || [];
+    
+    return orders.map(o => {
+      const product = products.find(p => p.id === o.product_id);
+      const farmer = product ? farmers.find(f => f.id === product.farmer_id) : null;
+      return {
+        ...o,
+        product_name: o.product_name || (product ? product.product_name : "Crop Product"),
+        farmer_id: o.farmer_id || (product ? product.farmer_id : ""),
+        farmer_name: o.farmer_name || (farmer ? farmer.name : "Local Farmer")
+      };
+    });
   },
 
   async createOrder(orderData) {
