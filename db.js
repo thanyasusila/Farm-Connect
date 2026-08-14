@@ -307,15 +307,18 @@ const DEFAULT_REVIEWS = [
 
 // Helper to check if Supabase credentials exist
 function getSupabaseConfig() {
+  const defaultUrl = "https://eedzbegogjpymhuxfjvs.supabase.co";
+  const defaultKey = "PASTE_YOUR_COPIED_PUBLISHABLE_KEY_HERE"; // <--- Paste your Supabase Key here!
+
   const url = localStorage.getItem("FC_SUPABASE_URL") || 
               localStorage.getItem("fc_supabase_url") || 
               localStorage.getItem("supabase_url") || 
-              window.VITE_SUPABASE_URL || "";
+              window.VITE_SUPABASE_URL || defaultUrl;
   const key = localStorage.getItem("FC_SUPABASE_ANON_KEY") || 
               localStorage.getItem("fc_supabase_anon_key") || 
               localStorage.getItem("supabase_key") || 
               localStorage.getItem("supabase_anon_key") || 
-              window.VITE_SUPABASE_ANON_KEY || "";
+              window.VITE_SUPABASE_ANON_KEY || defaultKey;
               
   if (!url || !key || url === "undefined" || url === "null" || key === "undefined" || key === "null") {
     return null;
