@@ -1244,10 +1244,31 @@ class FarmConnectApp {
     const price = document.getElementById('prod-price').value;
     const quantity = document.getElementById('prod-qty').value;
     const harvestDate = document.getElementById('prod-harvest').value;
-    const imageUrl = document.getElementById('prod-image').value;
+    const selectImage = document.getElementById('prod-image').value;
+    const fileInput = document.getElementById('prod-image-file');
     const description = document.getElementById('prod-desc').value;
 
+    let imageUrl = selectImage;
+
+    // Helper to read file to Base64 using a Promise
+    const getBase64 = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    };
+
     try {
+      if (fileInput && fileInput.files.length > 0) {
+        try {
+          imageUrl = await getBase64(fileInput.files[0]);
+        } catch (fileErr) {
+          console.error("File reading failed, using template fallback", fileErr);
+        }
+      }
+
       await window.db.addProduct({
         product_name: name,
         category,
