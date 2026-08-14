@@ -308,7 +308,7 @@ const DEFAULT_REVIEWS = [
 // Helper to check if Supabase credentials exist
 function getSupabaseConfig() {
   const defaultUrl = "https://eedzbegogjpymhuxfjvs.supabase.co";
-  const defaultKey = "PASTE_YOUR_COPIED_PUBLISHABLE_KEY_HERE"; // <--- Paste your Supabase Key here!
+  const defaultKey = "sb_publishable_lYBahbbOTpcKuJW7fonZ8A_yhUfQBZ6"; // <--- Paste your Supabase Key here!
 
   const url = localStorage.getItem("FC_SUPABASE_URL") || 
               localStorage.getItem("fc_supabase_url") || 
