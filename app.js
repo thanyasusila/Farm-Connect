@@ -2068,7 +2068,9 @@ class FarmConnectApp {
       document.getElementById('passport-cert-id').innerText = cert;
 
       // QR Code URL using QRServer API
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`https://farmconnect.com/passport/${productId}?batch=${batch}`)}`;
+      const baseUrl = window.location.origin + window.location.pathname;
+      const targetUrl = `${baseUrl}#/product/${productId}?batch=${batch}`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(targetUrl)}`;
       document.getElementById('passport-qr-img').src = qrUrl;
 
       modal.style.display = 'flex';

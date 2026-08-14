@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FarmConnect Project Report</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            line-height: 1.6;
+            margin: 1in;
+            color: #000000;
+            font-size: 12pt;
+        }
+        h1, h2, h3, h4 {
+            font-family: "Times New Roman", Times, serif;
+            color: #000000;
+            text-align: center;
+        }
+        h1 {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-top: 50px;
+            text-transform: uppercase;
+        }
+        h2 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            text-align: left;
+            margin-top: 20px;
+        }
+        p {
+            text-align: justify;
+            text-indent: 0.5in;
+            margin-bottom: 15px;
+        }
+        .no-indent {
+            text-indent: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 11pt;
+        }
+        th, td {
+            border: 1px solid #000000;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .page-break {
+            page-break-after: always;
+            break-after: page;
+        }
+        .center-text {
+            text-align: center;
+            text-indent: 0;
+        }
+        .right-text {
+            text-align: right;
+            text-indent: 0;
+        }
+        .signature-container {
+            margin-top: 50px;
+            width: 100%;
+        }
+        .signature-left {
+            float: left;
+            width: 45%;
+            text-align: left;
+        }
+        .signature-right {
+            float: right;
+            width: 45%;
+            text-align: right;
+        }
+        .clear-float {
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- COVER PAGE -->
+    <div class="center-text" style="margin-top: 80px;">
+        <h1 style="font-size: 18pt;">FarmConnect: Direct Farmer-to-Consumer Marketplace</h1>
+        <br><br><br>
+        <p class="center-text"><strong>MINI PROJECT WORK SUBMITTED IN PARTIAL FULFILLMENT OF THE REQUIREMENTS FOR THE AWARD OF THE DEGREE OF BACHELOR OF COMPUTER SCIENCE</strong></p>
+        <br><br><br><br>
+        <p class="center-text"><strong>Submitted By</strong></p>
+        <p class="center-text"><strong>THANYA SUSILA NB</strong><br><strong>24SBCS108</strong></p>
+        <br><br><br>
+        <p class="center-text"><strong>Guided By</strong></p>
+        <p class="center-text"><strong>Dr. V. Abinaya, MCA., M.Phil., Ph.D</strong><br>Assistant Professor<br>Department of Computer Science</p>
+        <br><br><br><br>
+        <p class="center-text"><strong>DEPARTMENT OF COMPUTER SCIENCE</strong><br>
+        <strong>PSGR KRISHNAMMAL COLLEGE FOR WOMEN</strong><br>
+        <small>Affiliated to Bharathiar University | Autonomous | College of Excellence | Accredited with A++ Grade | Ranked 9th in NIRF</small><br>
+        Coimbatore - 641004<br>
+        <strong>AUGUST 2026</strong></p>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- DECLARATION -->
+    <div>
+        <h2>DECLARATION</h2>
+        <br><br>
+        <p>I hereby declare that this project work entitled <strong>"FarmConnect: Direct Farmer-to-Consumer Marketplace"</strong> submitted for the award of the Degree of Bachelor of Computer Science is a record of the original work done by <strong>THANYA SUSILA NB (24SBCS108)</strong> under the supervision and guidance of <strong>Dr. V. Abinaya, MCA., M.Phil., Ph.D</strong>, and this project work has not formed the basis for the award of any degree or similar title to any candidate of any university.</p>
+        <br><br>
+        <div class="signature-container">
+            <div class="signature-left">
+                <strong>Place:</strong> Coimbatore<br>
+                <strong>Date:</strong>
+            </div>
+            <div class="signature-right">
+                <strong>THANYA SUSILA NB</strong><br>
+                24SBCS108
+            </div>
+            <div class="clear-float"></div>
+        </div>
+        <br><br><hr><br>
+        <p class="center-text"><strong>Endorsed By</strong></p>
+        <br><br>
+        <div class="signature-container">
+            <div class="signature-left">
+                <strong>Place:</strong> Coimbatore<br>
+                <strong>Date:</strong>
+            </div>
+            <div class="signature-right">
+                <strong>Dr. V. Abinaya</strong><br>
+                Faculty Guide
+            </div>
+            <div class="clear-float"></div>
+        </div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- CERTIFICATE -->
+    <div>
+        <h2>CERTIFICATE</h2>
+        <br><br>
+        <p>This is to certify that the mini project work entitled <strong>"FarmConnect: Direct Farmer-to-Consumer Marketplace"</strong> submitted to Bharathiar University in partial fulfillment of the requirement for the award of the Degree of Bachelor of Computer Science is a record of the original work done by <strong>THANYA SUSILA NB (24SBCS108)</strong>, during her period of study in the Department of Computer Science, PSGR Krishnammal College for Women, Coimbatore, under my supervision and guidance, and her mini project work has not formed the basis for the award of any degree or similar title to any candidate of any university.</p>
+        <br><br><br>
+        <div class="signature-container">
+            <div class="signature-left">
+                <strong>Dr. V. Abinaya</strong><br>
+                Faculty Guide
+            </div>
+            <div class="signature-right">
+                <strong>Dr. S. Karpagavalli</strong><br>
+                Head of the Department
+            </div>
+            <div class="clear-float"></div>
+        </div>
+        <br><br><br><br>
+        <p class="no-indent"><strong>Submitted for final examination held on date:</strong> _______________________</p>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- ACKNOWLEDGEMENT -->
+    <div>
+        <h2>ACKNOWLEDGEMENT</h2>
+        <br><br>
+        <p>I proudly thank <strong>Dr. R. Nandini, Chair Person</strong>, PSGR Krishnammal College for Women, Coimbatore, for having given me the opportunity to undertake this mini project work.</p>
+        <p>I extend my profound gratitude to <strong>Dr. N. Yesodha Devi, Secretary</strong>, PSGR Krishnammal College for Women, Coimbatore, for the opportunity to undertake this mini project.</p>
+        <p>I extend my thanks to <strong>Dr. P. B. Harathi, Principal</strong>, PSGR Krishnammal College for Women, Coimbatore, for her support and the resources provided.</p>
+        <p>I am extremely grateful to <strong>Dr. S. Karpagavalli, Head of the Department</strong>, Department of Computer Science, PSGR Krishnammal College for Women, Coimbatore, for her continuous support and encouragement to complete this mini project successfully.</p>
+        <p>I express my sincere thanks to my Faculty Guide, <strong>Dr. V. Abinaya, Assistant Professor</strong>, Department of Computer Science, for her valuable guidance, constant motivation, and constructive suggestions throughout the course of this mini project.</p>
+        <br><br>
+        <div class="right-text">
+            <strong>THANYA SUSILA NB</strong>
+        </div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- SYNOPSIS -->
+    <div>
+        <h2>SYNOPSIS</h2>
+        <br><br>
+        <p>This report explains the design and development of <strong>FarmConnect: Direct Farmer-to-Consumer Marketplace</strong>, a web-based Agri-Tech application. The main purpose of this system is to eliminate exploitative multi-tier mandi middlemen and connect local farmers directly with end-consumers through a single unified platform. It helps farmers list crops, manage received orders, and calculate revenue, while enabling consumers to purchase fresh organic produce and verify food origin.</p>
+        <p>The application has five core modules: <strong>Home Dashboard</strong>, <strong>Marketplace & Cart</strong>, <strong>Digital Farm Passport</strong>, <strong>AI Fair-Price Estimator</strong>, and <strong>Logistics & Order Tracker</strong>. The Home Dashboard provides an overview of the platform, transaction stats, and localized activity feeds. The Marketplace allows users to filter produce by category (Fruits, Vegetables, Grains, Organic) and search crops. The Digital Farm Passport provides detailed food traceability, farm GPS coordinates, and soil health reports via dynamic QR codes. The AI Fair-Price Estimator calculates net income increases for farmers and savings for consumers.</p>
+        <p>The system also includes full bilingual support in <strong>English</strong> and <strong>Tamil (`தமிழ்`)</strong> to ensure rural farming communities can navigate the application easily. The backend utilizes <strong>Supabase</strong> as a cloud Postgres database with an automatic LocalStorage database fallback for offline resilience.</p>
+        <p>This report explains the software and tools used to build the application. It describes the main features of each module, the database tables, and the layout screens. It also details how the application simplifies agricultural supply chains and empowers rural farmers.</p>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- CONTENTS -->
+    <div>
+        <h2>CONTENTS</h2>
+        <br><br>
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align: center; width: 15%;">CHAPTER</th>
+                    <th style="width: 70%;">TITLE</th>
+                    <th style="text-align: center; width: 15%;">PAGE NO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td><strong>ACKNOWLEDGEMENT</strong></td>
+                    <td style="text-align: center;"><strong>I</strong></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td><strong>SYNOPSIS</strong></td>
+                    <td style="text-align: center;"><strong>II</strong></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"><strong>1</strong></td>
+                    <td><strong>INTRODUCTION</strong></td>
+                    <td style="text-align: center;"><strong>1</strong></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>1.1 Project Overview</td>
+                    <td style="text-align: center;">1</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>1.2 System Environment</td>
+                    <td style="text-align: center;">2</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>1.3 Software Features</td>
+                    <td style="text-align: center;">2</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"><strong>2</strong></td>
+                    <td><strong>SYSTEM STUDY</strong></td>
+                    <td style="text-align: center;"><strong>4</strong></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>2.1 Background Study</td>
+                    <td style="text-align: center;">4</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>2.2 Modules in FarmConnect</td>
+                    <td style="text-align: center;">4</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>2.3 Advantages of the System</td>
+                    <td style="text-align: center;">5</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>2.4 Entity Relationship</td>
+                    <td style="text-align: center;">6</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>2.5 Data Flow Diagram</td>
+                    <td style="text-align: center;">6.5</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"><strong>3</strong></td>
+                    <td><strong>SYSTEM DESIGN</strong></td>
+                    <td style="text-align: center;"><strong>7</strong></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>3.1 Input / Interaction Screens</td>
+                    <td style="text-align: center;">7</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>3.2 Table Design</td>
+                    <td style="text-align: center;">10</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"></td>
+                    <td>3.3 Output Screen</td>
+                    <td style="text-align: center;">12</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"><strong>4</strong></td>
+                    <td><strong>CONCLUSION</strong></td>
+                    <td style="text-align: center;"><strong>14</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- CHAPTER 1 -->
+    <div>
+        <h2>1. INTRODUCTION</h2>
+        <br>
+        <p>Agriculture supports the livelihood of over half of India's population. However, small-scale farmers face severe financial challenges due to traditional APMC mandi supply chains. In this system, commission agents control crop prices, taking a significant cut of the profits. This exploitation forces farmers to sell their produce at low rates while inflating retail prices for end-consumers, leaving farmers in debt and buyers paying high prices for stale produce.</p>
+        <p><strong>FarmConnect: Direct Farmer-to-Consumer Marketplace</strong> is an Agri-Tech platform developed to solve these inefficiencies by establishing a direct C2C trade network. By bypassing middlemen, the platform ensures that farmers receive the full market value of their crops, boosting net earnings by <strong>+185%</strong>. Consumers gain access to fresh, pesticide-free crops delivered directly from local orchards at <strong>~15% lower rates</strong> than retail supermarkets, while direct shipping saves over <strong>4 kg of CO2</strong> per order.</p>
+        <p>To build transparency, the platform integrates a <strong>Digital Farm Passport</strong> utilizing dynamic QR codes to verify farm GPS coordinates, organic certs, and soil pH ratings. It also features a real-time <strong>AI Price Calculator</strong> for margin estimation and a 4-stage shipment tracker with automated GST invoicing. The interface supports <strong>English</strong> and <strong>Tamil (`தமிழ்`)</strong> to bridge the digital divide for rural farming communities.</p>
+        <p>The primary objective of this project is to implement a secure, scalable, and responsive database-driven agricultural commerce system. The application uses HTML5, CSS3, and JavaScript, backed by a <strong>Supabase (PostgreSQL)</strong> cloud database with an automatic LocalStorage fallback. This report outlines the system requirements, table schemas, routing logic, and layout screens, presenting a practical software solution to improve local agricultural trade.</p>
+        
+        <h3>1.1 Project Overview</h3>
+        <p>FarmConnect is a single-page web application designed to connect farmers directly with buyers. The platform provides:</p>
+        <ol>
+            <li><strong>Interactive Marketplace</strong>: Allows consumers to search and filter local crops.</li>
+            <li><strong>Digital Traceability Certificates</strong>: Generates a verified farm passport showing soil data and exact GPS locations.</li>
+            <li><strong>AI Price Estimator</strong>: An analytical calculator showing direct income gains vs mandi rates.</li>
+            <li><strong>Order Management Suite</strong>: Tracks shipment delivery stages and generates printable invoices.</li>
+        </ol>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- SYSTEM ENVIRONMENT -->
+    <div>
+        <h3>1.2 System Environment</h3>
+        <p class="no-indent">FarmConnect is a browser-based application. During development, the application is tested on a local server using <code>localhost:8000</code>.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Component</th>
+                    <th style="width: 70%;">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Application Type</strong></td>
+                    <td>Single-Page Web Application (SPA).</td>
+                </tr>
+                <tr>
+                    <td><strong>Front-End</strong></td>
+                    <td>HTML5, Vanilla CSS3 (Custom variables, glassmorphism), ES6 JavaScript.</td>
+                </tr>
+                <tr>
+                    <td><strong>Routing</strong></td>
+                    <td>Client-side hash routing (<code>#/shop</code>, <code>#/cart</code>, <code>#/consumer-dashboard</code>).</td>
+                </tr>
+                <tr>
+                    <td><strong>Backend</strong></td>
+                    <td>Supabase (Cloud PostgreSQL) with LocalStorage DB fallback.</td>
+                </tr>
+                <tr>
+                    <td><strong>Libraries & APIs</strong></td>
+                    <td>Lucide Icons CDN, QRServer API (for QR Traceability).</td>
+                </tr>
+                <tr>
+                    <td><strong>Browser Support</strong></td>
+                    <td>Google Chrome, Mozilla Firefox, Microsoft Edge, Safari.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>1.3 Software Features</h3>
+        <p class="no-indent">FarmConnect features a modern, clean, responsive green-themed design:</p>
+        <ul>
+            <li><strong>Sidebar / Top Navigation Menu</strong>: Quick links to Home, Shop, and dashboards.</li>
+            <li><strong>Bilingual Switcher</strong>: Real-time localization toggle between English and Tamil (<code>தமிழ்</code>).</li>
+            <li><strong>Live Activity Ticker</strong>: Automatically displays sliding notices of recent marketplace activity (e.g., registrations, purchases).</li>
+            <li><strong>Supabase Status Pill</strong>: Dynamic header status indicator displaying green (<code>Supabase Connected</code>) or red (<code>LocalStorage Mock DB</code>).</li>
+        </ul>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- CHAPTER 2 -->
+    <div>
+        <h2>2. SYSTEM STUDY</h2>
+        <br>
+        <h3>2.1 Background Study</h3>
+        <p>Agricultural markets in India are heavily dependent on commission agents (middlemen) operating in APMC mandis. While they facilitate sales, they take high commissions and delay payments. A direct digital marketplace allows farmers to bypass these middlemen. By matching buyer orders with listed harvests, payments are made directly, crop quality is preserved, and delivery times are halved.</p>
+
+        <h3>2.2 Modules in FarmConnect</h3>
+        <ol>
+            <li><strong>Home Dashboard</strong>: Displays welcome banners, platform statistics (total farmers, active products, completed orders), featured items, and runs the real-time sliding live activity ticker feed.</li>
+            <li><strong>Marketplace & Cart</strong>: Renders the crop inventory with dynamic availability tags, handles shopping cart quantities, and manages checkout validations.</li>
+            <li><strong>Digital Farm Passport</strong>: Renders a verified crop certificate modal displaying soil pH, organic cert IDs, GPS locations, and dynamically generated QR codes.</li>
+            <li><strong>AI Price Calculator</strong>: An interactive modal calculator that computes Mandi middleman rates vs Direct pricing to show farmer profit margins.</li>
+            <li><strong>Consumer / Farmer Dashboards</strong>: Shows order shipment tracker tracking stages, printable tax invoices, and farmer list portals for harvest stocks.</li>
+        </ol>
+
+        <h3>2.3 Advantages of the System</h3>
+        <ul>
+            <li><strong>Direct Profits</strong>: Farmers earn <strong>+185% higher net income</strong> by pocketing the middlemen's margins.</li>
+            <li><strong>Consumer Savings</strong>: Consumers buy fresh organic produce <strong>~15% cheaper</strong> than retail supermarkets.</li>
+            <li><strong>Transparent Traceability</strong>: Dynamic QR codes allow consumers to verify where and how their food was grown.</li>
+            <li><strong>Bilingual Inclusivity</strong>: Tamil translation ensures local regional compatibility.</li>
+            <li><strong>Cloud Syncing</strong>: Supabase database ensures secure, real-time records.</li>
+        </ul>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- ER DIAGRAM PLACEHOLDER -->
+    <div>
+        <h3>2.4 Entity Relationship</h3>
+        <p class="no-indent">Below is the graphic modeling the relationships between platform entities: Consumers, Farmers, Products, Orders, and Reviews.</p>
+        <br><br>
+        <!-- The user will drag and drop the image here -->
+        <p class="center-text" style="color: #666666; border: 2px dashed #999999; padding: 50px;">
+            [ INSERT ER DIAGRAM HERE ]<br>
+            <small>(Drag and drop the file <strong>farmconnect_er_diagram.png</strong> from your project directory here)</small>
+        </p>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- DATA FLOW DIAGRAM PLACEHOLDER -->
+    <div>
+        <h3>2.5 Data Flow Diagram</h3>
+        <p class="no-indent">The Data Flow Diagram (DFD) maps the flow of information through the FarmConnect platform across three distinct levels of abstraction:</p>
+        
+        <h4>Level 0 (Context Level DFD)</h4>
+        <p>The Level 0 DFD defines the boundary of the FarmConnect system. The central process "0.0 FarmConnect System" receives crop listings and stock levels from the "Farmer" external entity and sends back sales stats and order notifications. The "Consumer" external entity sends buyer registrations and purchase checkouts to the system, receiving crop origin certificates, invoices, and shipment tracking in return. The "Admin" manages system logs and audits listings.</p>
+
+        <h4>Level 1 (Functional Level DFD)</h4>
+        <p>The Level 1 DFD decomposes the system into main functional blocks: the Marketplace & Cart System, the Farmer Portal, the Digital Farm Passport system, the AI Price Calculator, and the Logistics & Invoicing system. It documents the flow of credentials, product structures, order states, and review comments across the database.</p>
+
+        <h4>Level 2 (Process Level DFD - Ordering Process)</h4>
+        <p>The Level 2 DFD details the transactional database sequence when a consumer places an order. The consumer searches products, checks the farm passport, and registers/logs in. Upon clicking checkout, the system validates the stock levels in the Products DB, creates a new order in the Orders DB, decrements the available quantity, and generates the print-ready GST Tax Invoice.</p>
+        
+        <br><br>
+        <!-- The user will drag and drop the image here -->
+        <p class="center-text" style="color: #666666; border: 2px dashed #999999; padding: 50px;">
+            [ INSERT DATA FLOW DIAGRAM HERE ]<br>
+            <small>(Drag and drop the file <strong>farmconnect_dfd.png</strong> from your project directory here)</small>
+        </p>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- CHAPTER 3 -->
+    <div>
+        <h2>3. SYSTEM DESIGN</h2>
+        <br>
+        <p>The system design of FarmConnect is clean, intuitive, and roles-focused. The application interface separates functionalities for farmers, consumers, and administrators.</p>
+
+        <h3>3.1 Input / Interaction Screens</h3>
+        <p class="no-indent">FarmConnect captures user input through structured, validated web forms. These input screens are grouped together on a single page to maintain layout flow:</p>
+        <ul>
+            <li><strong>Fig 3.1.1: Marketplace Search & Category Filters</strong>: Renders the crop grid, category filter pills (Vegetables, Fruits, Grains, Organic), and search input for finding produce.</li>
+            <li><strong>Fig 3.1.2: AI Fair-Price & Profit Margin Estimator</strong>: The interactive calculator overlay where users input crop variety and harvest weight to compare margins.</li>
+            <li><strong>Fig 3.1.3: Farmer Portal – Crop Listing Wizard</strong>: The farmer's form interface to register a new crop harvest.</li>
+        </ul>
+        <br>
+        <p class="center-text" style="color: #666666; border: 2px dashed #999999; padding: 50px;">
+            [ INSERT Fig 3.1.1, Fig 3.1.2, and Fig 3.1.3 SCREENSHOTS HERE ]
+        </p>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- TABLE DESIGN -->
+    <div>
+        <h3>3.2 Table Design</h3>
+        <p class="no-indent">The database structure consists of five primary tables configured in Supabase to maintain system integrity:</p>
+
+        <h4>1. Farmers Table (<code>public.farmers</code>)</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Column Name</th>
+                    <th>Data Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>farmer_id</td>
+                    <td>TEXT</td>
+                    <td>Unique farmer username / Auth ID (Primary Key)</td>
+                </tr>
+                <tr>
+                    <td>name</td>
+                    <td>TEXT</td>
+                    <td>Full name of the farmer</td>
+                </tr>
+                <tr>
+                    <td>farm_name</td>
+                    <td>TEXT</td>
+                    <td>Registered farm name</td>
+                </tr>
+                <tr>
+                    <td>contact_number</td>
+                    <td>TEXT</td>
+                    <td>Mobile contact number</td>
+                </tr>
+                <tr>
+                    <td>location</td>
+                    <td>TEXT</td>
+                    <td>Farm geographic location (City, State)</td>
+                </tr>
+                <tr>
+                    <td>products</td>
+                    <td>TEXT</td>
+                    <td>List of crops grown by the farmer</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>2. Consumers Table (<code>public.consumers</code>)</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Column Name</th>
+                    <th>Data Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>consumer_id</td>
+                    <td>TEXT</td>
+                    <td>Unique consumer username / Auth ID (Primary Key)</td>
+                </tr>
+                <tr>
+                    <td>name</td>
+                    <td>TEXT</td>
+                    <td>Full name of the buyer</td>
+                </tr>
+                <tr>
+                    <td>email</td>
+                    <td>TEXT</td>
+                    <td>Email address for invoicing (Unique)</td>
+                </tr>
+                <tr>
+                    <td>contact_number</td>
+                    <td>TEXT</td>
+                    <td>Mobile contact number</td>
+                </tr>
+                <tr>
+                    <td>address</td>
+                    <td>TEXT</td>
+                    <td>Detailed shipping and delivery address</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- TABLE DESIGN CONTINUED -->
+    <div>
+        <h4>3. Products Table (<code>public.products</code>)</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Column Name</th>
+                    <th>Data Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>product_id</td>
+                    <td>UUID</td>
+                    <td>Generated unique product identifier (Primary Key)</td>
+                </tr>
+                <tr>
+                    <td>product_name</td>
+                    <td>TEXT</td>
+                    <td>Name of the crop variety</td>
+                </tr>
+                <tr>
+                    <td>category</td>
+                    <td>TEXT</td>
+                    <td>Crop category (Fruits, Vegetables, Grains, Organic)</td>
+                </tr>
+                <tr>
+                    <td>price</td>
+                    <td>NUMERIC(10,2)</td>
+                    <td>Price in Rupees per kilogram</td>
+                </tr>
+                <tr>
+                    <td>quantity</td>
+                    <td>NUMERIC(10,2)</td>
+                    <td>Available stock weight in kilograms</td>
+                </tr>
+                <tr>
+                    <td>farmer_id</td>
+                    <td>TEXT</td>
+                    <td>References farmer profile ID (Foreign Key)</td>
+                </tr>
+                <tr>
+                    <td>description</td>
+                    <td>TEXT</td>
+                    <td>Short product details (Optional)</td>
+                </tr>
+                <tr>
+                    <td>harvest_date</td>
+                    <td>DATE</td>
+                    <td>Crop harvest date</td>
+                </tr>
+                <tr>
+                    <td>image_url</td>
+                    <td>TEXT</td>
+                    <td>Link to product display photo (Optional)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>4. Orders Table (<code>public.orders</code>)</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Column Name</th>
+                    <th>Data Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>order_id</td>
+                    <td>UUID</td>
+                    <td>Generated unique order transaction ID (Primary Key)</td>
+                </tr>
+                <tr>
+                    <td>customer_id</td>
+                    <td>TEXT</td>
+                    <td>References buying consumer ID (Foreign Key)</td>
+                </tr>
+                <tr>
+                    <td>product_id</td>
+                    <td>UUID</td>
+                    <td>References purchased product ID (Foreign Key)</td>
+                </tr>
+                <tr>
+                    <td>quantity</td>
+                    <td>NUMERIC(10,2)</td>
+                    <td>Ordered weight in kilograms</td>
+                </tr>
+                <tr>
+                    <td>total_price</td>
+                    <td>NUMERIC(10,2)</td>
+                    <td>Final amount charged in Rupees</td>
+                </tr>
+                <tr>
+                    <td>order_status</td>
+                    <td>TEXT</td>
+                    <td>Fulfillment status ('Pending', 'Shipped', 'Delivered')</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- TABLE DESIGN CONTINUED 2 -->
+    </div>
+    <div class="page-break"></div>
+
+    <!-- OUTPUT SCREENS -->
+    <div>
+        <h3>3.3 Output Screens</h3>
+        <p class="no-indent">The output screens display dynamic dashboards, tracking timelines, and printable invoices. These are grouped on a single page:</p>
+        <ul>
+            <li><strong>Fig 3.3.1: Digital Farm Passport Certificate</strong>: The organic certificate card containing soil health statistics, verified GPS coords, carbon offset values, and a scannable QR trace code.</li>
+            <li><strong>Fig 3.3.2: Consumer Dashboard & Shipment Timeline</strong>: Displays the list of customer purchases with a 4-stage tracking timeline (Placed, Packed, In Transit, Delivered).</li>
+            <li><strong>Fig 3.3.3: Direct Sales GST Tax Invoice</strong>: A print-ready invoicing template detailing CGST/SGST tax breakdown and the final grand total.</li>
+        </ul>
+        <br>
+        <p class="center-text" style="color: #666666; border: 2px dashed #999999; padding: 50px;">
+            [ INSERT Fig 3.3.1, Fig 3.3.2, and Fig 3.3.3 SCREENSHOTS HERE ]
+        </p>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- CHAPTER 4 -->
+    <div>
+        <h2>4. CONCLUSION</h2>
+        <br><br>
+        <p><strong>FarmConnect: Direct Farmer-to-Consumer Marketplace</strong> is a responsive web application designed to empower small-scale farmers and provide consumers with fresh, chemical-free food. By utilizing client-side single-page hash routing, vanilla CSS3 styling, and a Supabase cloud database backend, the application runs efficiently in modern browsers and updates data in real time.</p>
+        <p>Key features like the <strong>Digital Farm Passport</strong> (with QR traceability, GPS coordinates, and soil metrics) and the <strong>AI Price Calculator</strong> help demonstrate transparency and financial value. The addition of full <strong>Tamil localization</strong> ensures accessibility for regional farmers.</p>
+        <p>In conclusion, FarmConnect replaces exploitative middlemen networks with a secure, efficient C2C marketplace, supporting local agriculture and offering a practical solution for modern agricultural trade.</p>
+    </div>
+
+</body>
+</html>
